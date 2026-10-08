@@ -1,108 +1,113 @@
-# 🤖 Agency-Agents: Curated AI Agent Personas
-> A production-grade collection of specialized AI agent personas for **Cursor**, **Claude Code**, **GitHub Copilot**, **Gemini CLI**, **Windsurf**, and **Aider**.
-> 
-> *Clone of [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents) with an integrated interactive Web Studio, live persona execution, and 1-click IDE export.*
+# 🎂 מחולל ומעצב תגי שמות ותאריכים לכרטיסי יום הולדת (Birthday Tags Generator)
+
+> **אפליקציית ווב מודרנית ואינטראקטיבית בעברית מלאה לעיצוב, התאמה אישית והורדת תגי שמות ותאריכים לכרטיסי יומולדת בקובץ PDF מוכן להדפסה וגזירה.**
+
+🌐 **קישור לאתר החי ב-GitHub Pages:**  
+👉 [https://almog787.github.io/Birthday-tag/](https://almog787.github.io/Birthday-tag/)
 
 ---
 
-## 🎯 What is Agency-Agents?
+## ✨ תכונות עיקריות (Features)
 
-Generic LLMs frequently produce inconsistent boilerplate and subtle hallucinations because they lack domain constraints, strict architectural boundaries, and standardized deliverables.
-
-**Agency-Agents** organizes the software development, design, and marketing lifecycle into **14+ professional divisions** containing specialized AI agent personas. Each agent has:
-- **Dual-Layer Architecture**: YAML frontmatter (for routing, metadata, tags, and tools) + Markdown payload (strict behavioral instructions, negative guardrails, and success metrics).
-- **Domain-Specific Deliverables**: Predictable, production-ready outputs instead of hand-waving explanations.
-- **Shared Memory & Workflow Interoperability**: Agents can be assembled into multi-agent pipelines (e.g., *Product Manager* ➔ *UI Designer* ➔ *Frontend Developer* ➔ *Backend Architect* ➔ *Code Reviewer*).
-
----
-
-## 🏢 Professional Divisions Taxonomy
-
-```text
-agency-agents/
-├── divisions/
-│   ├── engineering/          # Backend Architect, Frontend Dev, Security Engineer, DevOps Automator, Code Reviewer...
-│   ├── design/               # UI Designer, UX Researcher, Brand Guardian, Design System Lead...
-│   ├── product/              # Product Manager, Trend Researcher, Feedback Synthesizer...
-│   ├── marketing/            # Growth Hacker, SEO & GEO Specialist, Content Creator...
-│   ├── sales/                # Pitch Deck Architect, Proposal Writer, Sales Engineer...
-│   ├── finance/              # SaaS Financial Modeler, Unit Economics Auditor...
-│   ├── testing/              # E2E Test Engineer, Load Test Specialist, QA Lead...
-│   ├── specialized/          # Prompt Engineer, MCP Server Architect, Token Optimizer...
-│   ├── spatial-computing/    # VisionOS Architect, WebXR Engineer...
-│   ├── game-development/     # Game Mechanics Designer, Level Architect...
-│   └── project-management/   # Scrum Master, Agile Delivery Director...
-├── scripts/
-│   ├── install-agents.sh     # Interactive CLI setup script
-│   ├── export-agents.js      # Generator for .cursorrules, CLAUDE.md, and Copilot
-│   └── validate-agents.js    # Schema and Markdown validator
-└── README.md
-```
-
----
-
-## 🚀 Quick Start & Installation
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/msitarzewski/agency-agents.git
-cd agency-agents
-```
-
-### 2. Run the Interactive Installer
-```bash
-bash scripts/install-agents.sh
-```
-
-### 3. Export Rules for Your Favorite IDE
-
-#### Cursor IDE (`.cursorrules`)
-```bash
-node scripts/export-agents.js --target=cursor
-```
-
-#### Claude Code (`CLAUDE.md`)
-```bash
-node scripts/export-agents.js --target=claude
-```
-
-#### GitHub Copilot (`.github/copilot-instructions.md`)
-```bash
-node scripts/export-agents.js --target=copilot
-```
+* 📜 **טעינה מראש של 29 ילדים/חוגגים:** כולל את כל רשימת השמות והתאריכים המלאה שהוגדרה.
+* 🎨 **ערכות נושא מעוצבות (Themes):**
+  * 🎈 יומולדת חגיגית (פסטל/שמח)
+  * 🌟 כוכבי הקסם (לילה וזהב)
+  * 🌿 ספארי מוזהב (טבע וירוק)
+  * 🦄 חד קרן פסטל (סגול/ורוד)
+  * 👑 מלכותי יוקרתי (זהב וכתר)
+  * 🦕 דינוזאורים והרפתקאות (כחול-ירוק)
+  * ⚽ ספורטיבי ודינמי (תכלת)
+  * 🍧 גלידות ומתוקים (ורוד-רך)
+  * 🎨 מינימליסטי נקי (שחור-לבן)
+* 📐 **סימני גזירה ברורים להדפסה מדויקת:**
+  * סימני מספריים בפינות ובגבולות
+  * גבול מקווקו (Dashed Line) לבחירה
+  * גבול רציף דק או ללא גבולות
+* 📄 **חלוקת עמודים מותאמת לנייר A4:**
+  * 10 תגים בדף (2 טור x 5 שורות) - תקני ופופולרי
+  * 8 תגים בדף (2 טור x 4 שורות) - מוגדל
+  * 12 תגים בדף (3 טור x 4 שורות) - מרובע
+  * 15 תגים בדף (3 טור x 5 שורות) - קומפקטי
+* ✍️ **התאמת טקסט ופונטים בעברית:**
+  * בחירה בין פונטים בגוגל פונטס: *Fredoka*, *Secular One*, *Rubik*, *Varela Round*, *Heebo*, *Assistant*.
+  * כותרת משנה מותאמת אישית (למשל: *"מזל טוב!"*, *"יום הולדת שמח!"*, *"חוגגים יחד"*).
+  * שינוי סגנון הצגת התאריך (DD.MM או DD/MM).
+* ➕ **ניהול מלא של הילדים/חוגגים:**
+  * הוספת ילד/חוגג חדש (שם ותאריך)
+  * עריכת שמות ותאריכים קיימים
+  * מחיקת תגים בודדים או איפוס לרשימה המקורית
+  * **יבוא מהיר בטקסט חופשי (Bulk Import):** הדבקת רשימת שמות ותאריכים בלחיצה אחת!
+* 🔍 **חיפוש וסינון מהיר:** איתור ילדים לפי שם או תאריך.
+* 🖨️ **ייצוא איכותי ב-PDF והדפסה ישירה:**
+  * יצירת PDF איכותי לכל העמודים באמצעות `jspdf` ו-`html2canvas`.
+  * אפשרות הדפסה ישירה (`window.print()`) מותאמת לנייר A4.
 
 ---
 
-## 💡 How to Activate Agents in Conversations
+## 📋 רשימת השמות והתאריכים המובנית (29 ילדים)
 
-Once installed, simply reference the agent in your prompt:
-
-- **Backend Architecture**:  
-  `"Act as @Backend Architect and design a high-throughput PostgreSQL schema with foreign keys, partitioned audit tables, and indexing strategies for a multi-tenant SaaS."`
-
-- **Code Review**:  
-  `"Act as @Code Reviewer and audit this pull request diff for OWASP security vulnerabilities, unhandled promise rejections, and N+1 query bottlenecks."`
-
-- **Frontend Development**:  
-  `"Act as @Frontend Developer and build an accessible, pixel-perfect React + Tailwind component ensuring CLS = 0 and WCAG AAA compliance."`
-
-- **Prompt Engineering**:  
-  `"Act as @Prompt Engineer and refine this system prompt using XML delimiters, few-shot examples, and strict JSON output schemas."`
+| # | שם הילד/ה | תאריך יום הולדת | # | שם הילד/ה | תאריך יום הולדת |
+|---|---|---|---|---|---|
+| 1 | אביב | 18.06 | 16 | מיה | 18.06 |
+| 2 | דור | 07.07 | 17 | אורין | 06.10 |
+| 3 | עלמה | 27.07 | 18 | עמית ישראל | 17.10 |
+| 4 | אביב | 09.05 | 19 | שון | 22.09 |
+| 5 | עדיאל | 11.08 | 20 | נתן דויד | 25.09 |
+| 6 | אוריה | 12.05 | 21 | מיה | 25.07 |
+| 7 | אורי | 26.10 | 22 | רוני | 08.04 |
+| 8 | ריי משה | 05.01 | 23 | אריאל | 08.10 |
+| 9 | לביא | 22.09 | 24 | ריי דוד | 01.10 |
+| 10 | רואי | 23.06 | 25 | שקד | 13.10 |
+| 11 | אימרי | 05.07 | 26 | דין | 12.07 |
+| 12 | אגם הודיה | 30.05 | 27 | מיכל | 31.5 |
+| 13 | אלרואי | 15.07 | 28 | אלמה | 13.9 |
+| 14 | אליה | 24.04 | 29 | עמנואל | 13.9 |
+| 15 | הלני | 31.07 | | | |
 
 ---
 
-## 🧪 Validating Agent Definitions
+## 🛠️ טכנולוגיות (Tech Stack)
 
-You can validate all YAML frontmatters and Markdown integrity by running:
+* **React 19** + **TypeScript**
+* **Vite** המאיץ פיתוח ובנייה
+* **Tailwind CSS v4** לעיצוב מודרני וריספונסיבי
+* **Lucide React** לאייקונים אלגנטיים
+* **jsPDF** & **html2canvas** להפקת קובצי PDF
+* **GitHub Actions** לפריסה אוטומטית ב-GitHub Pages
+
+---
+
+## 🚀 הרצה מקומית (Local Setup)
+
 ```bash
-node scripts/validate-agents.js
+# 1. שכפול המאגר
+git clone https://github.com/almog787/Birthday-tag.git
+cd Birthday-tag
+
+# 2. התקנת תלויות
+npm install
+
+# 3. הרצת שרת פיתוח מקומי
+npm run dev
+```
+
+האתר יהיה זמין בכתובת `http://localhost:3000`.
+
+### 📦 בנייה לפרודקשן (Build)
+
+```bash
+npm run build
 ```
 
 ---
 
-## 🌐 Interactive Web Studio
-This repository comes with a full-featured web dashboard allowing you to:
-- Browse, search, and filter all agent personas by division, tech stack, and tags.
-- Chat in real-time with any Agent persona using Gemini.
-- Assemble Multi-Agent Teams and run collaborative project workflows.
-- View, copy, and export `.cursorrules`, `CLAUDE.md`, or GitHub Copilot instructions with 1-click.
+## 🤖 פריסה אוטומטית ב-GitHub Pages (CI/CD)
+
+במאגר מוגדר GitHub Action בנתיב `.github/workflows/deploy-pages.yml`.  
+בכל עדכון בקוד בדחיפה (`push`) לענף `main` או `master`, ה-Workflow יבנה ויפרוס אוטומטית את האתר ל-GitHub Pages בכתובת:  
+👉 **[https://almog787.github.io/Birthday-tag/](https://almog787.github.io/Birthday-tag/)**
+
+---
+
+💖 נוצר באהבה עבור חגיגות ימי הולדת שמחים!
