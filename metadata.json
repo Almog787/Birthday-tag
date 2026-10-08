@@ -1,0 +1,7 @@
+{
+  "name": "Littlest Tel Aviv: Israeli City 3D Animator",
+  "description": "אפליקציה מעוצבת בעברית ליצירה, עיצוב והורדת דפי תגי שמות ותאריכים לכרטיסי יומולדת ב-PDF עם סימוני גזירה מוכנים להדפסה",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
