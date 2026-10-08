@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { toJpeg, toPng } from 'html-to-image';
+import html2canvas from 'html2canvas';
 
 // 29 Children provided in user prompt
 interface TagItem {
@@ -351,6 +352,19 @@ const COLOR_PALETTES: ColorPalette[] = [
   }
 ];
 
+// Helper to calculate RGBA for subtle background patterns
+function hexToRgba(hex: string, alpha: number = 0.35): string {
+  if (!hex || hex === 'none') return 'transparent';
+  let clean = hex.replace('#', '');
+  if (clean.length === 3) {
+    clean = clean.split('').map((c) => c + c).join('');
+  }
+  const r = parseInt(clean.substring(0, 2), 16) || 150;
+  const g = parseInt(clean.substring(2, 4), 16) || 150;
+  const b = parseInt(clean.substring(4, 6), 16) || 150;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 // Background Patterns
 interface BackgroundPattern {
   id: string;
@@ -367,32 +381,32 @@ const BG_PATTERNS: BackgroundPattern[] = [
   {
     id: 'dots',
     name: 'נקודות עדינות',
-    cssPattern: (hex) => `radial-gradient(circle, ${hex} 1.5px, transparent 1.5px)`
+    cssPattern: (hex) => `radial-gradient(circle, ${hexToRgba(hex, 0.4)} 1.5px, transparent 1.5px)`
   },
   {
     id: 'grid',
     name: 'רשת משבצות',
-    cssPattern: (hex) => `linear-gradient(${hex} 1px, transparent 1px), linear-gradient(90deg, ${hex} 1px, transparent 1px)`
+    cssPattern: (hex) => `linear-gradient(${hexToRgba(hex, 0.35)} 1px, transparent 1px), linear-gradient(90deg, ${hexToRgba(hex, 0.35)} 1px, transparent 1px)`
   },
   {
     id: 'stripes',
     name: 'פסים אלכסוניים',
-    cssPattern: (hex) => `repeating-linear-gradient(45deg, transparent, transparent 10px, ${hex} 10px, ${hex} 12px)`
+    cssPattern: (hex) => `repeating-linear-gradient(45deg, transparent, transparent 10px, ${hexToRgba(hex, 0.3)} 10px, ${hexToRgba(hex, 0.3)} 12px)`
   },
   {
     id: 'confetti',
     name: 'קונפטי חגיגי',
-    cssPattern: (hex) => `radial-gradient(circle at 20% 30%, ${hex} 2px, transparent 2px), radial-gradient(circle at 80% 70%, ${hex} 2.5px, transparent 2.5px)`
+    cssPattern: (hex) => `radial-gradient(circle at 20% 30%, ${hexToRgba(hex, 0.45)} 2px, transparent 2px), radial-gradient(circle at 80% 70%, ${hexToRgba(hex, 0.4)} 2.5px, transparent 2.5px)`
   },
   {
     id: 'stars',
     name: 'כוכבים וניצוצות',
-    cssPattern: (hex) => `radial-gradient(circle at 50% 50%, ${hex} 1.5px, transparent 1.5px), radial-gradient(circle at 20% 80%, ${hex} 1px, transparent 1px)`
+    cssPattern: (hex) => `radial-gradient(circle at 50% 50%, ${hexToRgba(hex, 0.45)} 1.5px, transparent 1.5px), radial-gradient(circle at 20% 80%, ${hexToRgba(hex, 0.35)} 1px, transparent 1px)`
   },
   {
     id: 'waves',
     name: 'גלי ים',
-    cssPattern: (hex) => `radial-gradient(circle at 100% 50%, transparent 20%, ${hex} 21%, ${hex} 34%, transparent 35%, transparent)`
+    cssPattern: (hex) => `radial-gradient(circle at 100% 50%, transparent 20%, ${hexToRgba(hex, 0.35)} 21%, ${hexToRgba(hex, 0.35)} 34%, transparent 35%, transparent)`
   }
 ];
 
@@ -532,6 +546,15 @@ export default function App() {
     setExportProgress('מכין את קובץ ה-PDF...');
 
     try {
+      // Ensure all custom Hebrew web fonts are completely loaded before capturing
+      if (document.fonts?.ready) {
+        try {
+          await document.fonts.ready;
+        } catch {
+          // Continue if fonts.ready is unsupported
+        }
+      }
+
       const PDFDoc = typeof jsPDF === 'function' ? jsPDF : (jsPDF as any).jsPDF;
       const pdf = new PDFDoc({
         orientation: 'portrait',
@@ -568,14 +591,13 @@ export default function App() {
           // Small yield to allow layout to settle
           await new Promise((resolve) => setTimeout(resolve, 60));
 
-          // Try toJpeg first with 0.95 quality, pixelRatio: 2 for sharp print
+          // Tier 1: Try toJpeg with embedded fonts and high DPI
           try {
             imgData = await toJpeg(pageEl, {
               quality: 0.95,
               pixelRatio: 2,
               backgroundColor: '#ffffff',
               cacheBust: true,
-              skipFonts: true,
               filter: (node) => {
                 if (node instanceof HTMLElement && node.classList.contains('no-print')) {
                   return false;
@@ -583,19 +605,50 @@ export default function App() {
                 return true;
               }
             });
-          } catch (jpegErr) {
-            console.warn('JPEG generation failed, falling back to PNG:', jpegErr);
-            imgData = await toPng(pageEl, {
-              pixelRatio: 1.5,
-              backgroundColor: '#ffffff',
-              skipFonts: true,
-              filter: (node) => {
-                if (node instanceof HTMLElement && node.classList.contains('no-print')) {
-                  return false;
+          } catch (fontErr) {
+            console.warn('toJpeg with fonts failed, attempting toJpeg with skipFonts:', fontErr);
+            // Tier 2: Try toJpeg with skipFonts (bypasses CORS restrictions)
+            try {
+              imgData = await toJpeg(pageEl, {
+                quality: 0.95,
+                pixelRatio: 2,
+                backgroundColor: '#ffffff',
+                cacheBust: true,
+                skipFonts: true,
+                filter: (node) => {
+                  if (node instanceof HTMLElement && node.classList.contains('no-print')) {
+                    return false;
+                  }
+                  return true;
                 }
-                return true;
+              });
+            } catch (jpegErr) {
+              console.warn('toJpeg failed, attempting toPng:', jpegErr);
+              // Tier 3: Try toPng with skipFonts
+              try {
+                imgData = await toPng(pageEl, {
+                  pixelRatio: 1.5,
+                  backgroundColor: '#ffffff',
+                  skipFonts: true,
+                  filter: (node) => {
+                    if (node instanceof HTMLElement && node.classList.contains('no-print')) {
+                      return false;
+                    }
+                    return true;
+                  }
+                });
+              } catch (pngErr) {
+                console.warn('html-to-image failed completely, attempting html2canvas fallback:', pngErr);
+                // Tier 4: html2canvas canvas renderer
+                const canvas = await html2canvas(pageEl, {
+                  scale: 2,
+                  useCORS: true,
+                  backgroundColor: '#ffffff',
+                  ignoreElements: (el) => el.classList.contains('no-print')
+                });
+                imgData = canvas.toDataURL('image/jpeg', 0.95);
               }
-            });
+            }
           }
         } finally {
           // Restore preview styling
@@ -611,7 +664,9 @@ export default function App() {
         if (i > 0) {
           pdf.addPage('a4', 'portrait');
         }
-        pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+
+        const imageFormat = imgData.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+        pdf.addImage(imgData, imageFormat, 0, 0, 210, 297, undefined, 'FAST');
       }
 
       setExportProgress('מייצר קובץ ומוריד...');
@@ -854,6 +909,36 @@ export default function App() {
                 </div>
               </div>
 
+              {/* Custom Border Color Picker */}
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    צבע מסגרת וסימוני גזירה:
+                  </label>
+                  {customBorderColor && (
+                    <button
+                      onClick={() => setCustomBorderColor('')}
+                      className="text-[11px] text-rose-600 hover:underline font-semibold"
+                    >
+                      אפס לצבע התבנית
+                    </button>
+                  )}
+                </div>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={customBorderColor || selectedTheme.borderColorHex || '#cbd5e1'}
+                    onChange={(e) => setCustomBorderColor(e.target.value)}
+                    className="w-9 h-9 rounded-lg cursor-pointer border border-slate-300 p-0.5 bg-white"
+                  />
+                  <span className="text-xs text-slate-600">
+                    {customBorderColor
+                      ? `צבע מותאם אישית (${customBorderColor})`
+                      : `צבע ברירת מחדל של התבנית`}
+                  </span>
+                </div>
+              </div>
+
               {/* Background Pattern / Texture Selection */}
               <div>
                 <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
@@ -949,6 +1034,35 @@ export default function App() {
                     </option>
                   ))}
                 </select>
+              </div>
+
+              {/* Date Format Choice */}
+              <div>
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
+                  מבנה תאריך בכרטיס:
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => setDateFormat('standard')}
+                    className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all text-center ${
+                      dateFormat === 'standard'
+                        ? 'border-rose-500 bg-rose-50/60 text-rose-700 font-bold ring-2 ring-rose-200'
+                        : 'border-slate-200 hover:bg-slate-50 text-slate-700 bg-white'
+                    }`}
+                  >
+                    תאריך בלבד (18.06)
+                  </button>
+                  <button
+                    onClick={() => setDateFormat('hebrew_prefix')}
+                    className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all text-center ${
+                      dateFormat === 'hebrew_prefix'
+                        ? 'border-rose-500 bg-rose-50/60 text-rose-700 font-bold ring-2 ring-rose-200'
+                        : 'border-slate-200 hover:bg-slate-50 text-slate-700 bg-white'
+                    }`}
+                  >
+                    עם קידומת (בתאריך 18.06)
+                  </button>
+                </div>
               </div>
 
               {/* Decorative Icon Choice */}
@@ -1351,7 +1465,7 @@ export default function App() {
                             
                             <div className={`px-2.5 py-0.5 rounded-md font-mono text-xs font-bold ${selectedTheme.badgeBg} ${selectedTheme.accentColor} flex items-center gap-1 shrink-0`}>
                               <Calendar className="w-3 h-3 inline" />
-                              <span>{tag.date}</span>
+                              <span>{dateFormat === 'hebrew_prefix' ? `בתאריך ${tag.date}` : tag.date}</span>
                             </div>
                           </div>
 
