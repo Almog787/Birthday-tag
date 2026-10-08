@@ -22,10 +22,12 @@ import {
   Heart,
   Star,
   Copy,
-  Zap
+  Zap,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import { toJpeg, toPng } from 'html-to-image';
 
 // 29 Children provided in user prompt
 interface TagItem {
@@ -215,9 +217,11 @@ export default function App() {
   const [newName, setNewName] = useState<string>('');
   const [newDate, setNewDate] = useState<string>('');
 
-  // PDF Generation Progress
+  // PDF Generation Progress & Feedback
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [exportProgress, setExportProgress] = useState<string>('');
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [exportSuccess, setExportSuccess] = useState<boolean>(false);
 
   // Refs
   const printPagesRef = useRef<HTMLDivElement>(null);
@@ -291,40 +295,119 @@ export default function App() {
   const handleDownloadPDF = async () => {
     if (!printPagesRef.current) return;
     setIsExporting(true);
+    setExportError(null);
+    setExportSuccess(false);
     setExportProgress('מכין את קובץ ה-PDF...');
 
     try {
-      const pdf = new jsPDF({
+      const PDFDoc = typeof jsPDF === 'function' ? jsPDF : (jsPDF as any).jsPDF;
+      const pdf = new PDFDoc({
         orientation: 'portrait',
         unit: 'mm',
-        format: 'a4'
+        format: 'a4',
+        compress: true
       });
 
-      const pageElements = printPagesRef.current.querySelectorAll('.a4-print-page');
+      const pageElements = Array.from(
+        printPagesRef.current.querySelectorAll('.a4-print-page')
+      ) as HTMLElement[];
+
+      if (pageElements.length === 0) {
+        throw new Error('לא נמצאו דפים להדפסה.');
+      }
 
       for (let i = 0; i < pageElements.length; i++) {
-        setExportProgress(`מעבד עמוד ${i + 1} מתוך ${pageElements.length}...`);
-        const pageEl = pageElements[i] as HTMLElement;
+        setExportProgress(`מעבד דף ${i + 1} מתוך ${pageElements.length}...`);
+        const pageEl = pageElements[i];
 
-        const canvas = await html2canvas(pageEl, {
-          scale: 2, // High resolution output
-          useCORS: true,
-          logging: false,
-          backgroundColor: '#ffffff'
-        });
+        // Store original inline styling to preserve preview zoom
+        const originalTransform = pageEl.style.transform;
+        const originalMargin = pageEl.style.margin;
+        const originalBoxShadow = pageEl.style.boxShadow;
 
-        const imgData = canvas.toDataURL('image/jpeg', 0.98);
+        let imgData: string | null = null;
+
+        try {
+          // Temporarily unscale for capture to ensure 100% full scale A4 rendering
+          pageEl.style.transform = 'none';
+          pageEl.style.margin = '0';
+          pageEl.style.boxShadow = 'none';
+
+          // Small yield to allow layout to settle
+          await new Promise((resolve) => setTimeout(resolve, 60));
+
+          // Try toJpeg first with 0.95 quality, pixelRatio: 2 for sharp print
+          try {
+            imgData = await toJpeg(pageEl, {
+              quality: 0.95,
+              pixelRatio: 2,
+              backgroundColor: '#ffffff',
+              cacheBust: true,
+              skipFonts: true,
+              filter: (node) => {
+                if (node instanceof HTMLElement && node.classList.contains('no-print')) {
+                  return false;
+                }
+                return true;
+              }
+            });
+          } catch (jpegErr) {
+            console.warn('JPEG generation failed, falling back to PNG:', jpegErr);
+            imgData = await toPng(pageEl, {
+              pixelRatio: 1.5,
+              backgroundColor: '#ffffff',
+              skipFonts: true,
+              filter: (node) => {
+                if (node instanceof HTMLElement && node.classList.contains('no-print')) {
+                  return false;
+                }
+                return true;
+              }
+            });
+          }
+        } finally {
+          // Restore preview styling
+          pageEl.style.transform = originalTransform;
+          pageEl.style.margin = originalMargin;
+          pageEl.style.boxShadow = originalBoxShadow;
+        }
+
+        if (!imgData) {
+          throw new Error(`שגיאה בלכידת תוכן דף ${i + 1}`);
+        }
+
         if (i > 0) {
           pdf.addPage('a4', 'portrait');
         }
-        pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+        pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
       }
 
-      setExportProgress('מוריד קובץ...');
-      pdf.save(`כרטיסי_יום_הולדת_לתג_${tags.length}_שמות.pdf`);
-    } catch (err) {
+      setExportProgress('מייצר קובץ ומוריד...');
+      const fileName = `כרטיסי_יום_הולדת_${tags.length}_תגים.pdf`;
+
+      // Try pdf.save and link download fallback
+      try {
+        pdf.save(fileName);
+      } catch (saveErr) {
+        console.warn('pdf.save failed, using blob URL download fallback:', saveErr);
+        const blob = pdf.output('blob');
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(() => {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }, 1500);
+      }
+
+      setExportSuccess(true);
+      setTimeout(() => setExportSuccess(false), 5000);
+    } catch (err: any) {
       console.error('PDF export error:', err);
-      alert('אירעה שגיאה ביצירת ה-PDF. אנא נסה שוב.');
+      setExportError(err?.message || 'אירעה שגיאה ביצירת ה-PDF. ניתן להשתמש בהדפסה ישירה.');
     } finally {
       setIsExporting(false);
       setExportProgress('');
@@ -385,6 +468,40 @@ export default function App() {
           </div>
         </div>
       </header>
+
+      {/* Alert notifications for PDF export */}
+      {exportSuccess && (
+        <div className="no-print bg-emerald-600 text-white px-4 py-2.5 text-center text-sm font-bold flex items-center justify-center gap-2 shadow-md animate-fade-in">
+          <CheckCircle2 className="w-5 h-5" />
+          <span>קובץ ה-PDF נוצר והורד בהצלחה למכשירך! 🎉 מזל טוב לחוגגים!</span>
+        </div>
+      )}
+
+      {exportError && (
+        <div className="no-print bg-rose-600 text-white px-4 py-3 text-center text-sm font-semibold flex flex-wrap items-center justify-center gap-3 shadow-md">
+          <AlertCircle className="w-5 h-5 shrink-0" />
+          <span>{exportError}</span>
+          <button
+            onClick={handleDirectPrint}
+            className="px-3 py-1 bg-white text-rose-700 font-bold rounded-md hover:bg-rose-50 text-xs shadow-xs"
+          >
+            פתח הדפסה / שמירה כ-PDF בדפדפן
+          </button>
+          <button
+            onClick={() => setExportError(null)}
+            className="text-white/80 hover:text-white text-xs underline"
+          >
+            סגור
+          </button>
+        </div>
+      )}
+
+      {isExporting && (
+        <div className="no-print bg-indigo-600 text-white px-4 py-2.5 text-center text-sm font-semibold flex items-center justify-center gap-3 shadow-md">
+          <RefreshCw className="w-4 h-4 animate-spin shrink-0" />
+          <span>{exportProgress || 'מעבד את קובץ ה-PDF, אנא המתן...'}</span>
+        </div>
+      )}
 
       {/* Main Content Layout */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -726,6 +843,35 @@ export default function App() {
                   onChange={(e) => setShowCornerCrop(e.target.checked)}
                   className="w-5 h-5 accent-rose-500 rounded cursor-pointer"
                 />
+              </div>
+
+              {/* Action Buttons inside Tab */}
+              <div className="pt-3 border-t border-slate-200 space-y-2.5">
+                <button
+                  onClick={handleDownloadPDF}
+                  disabled={isExporting}
+                  className="w-full py-3 px-4 font-bold text-white bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-sm"
+                >
+                  {isExporting ? (
+                    <>
+                      <RefreshCw className="w-5 h-5 animate-spin" />
+                      <span>{exportProgress || 'מעבד קובץ PDF...'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-5 h-5" />
+                      <span>הורד קובץ PDF להדפסה ({totalPages} עמודים)</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  onClick={handleDirectPrint}
+                  className="w-full py-2.5 px-4 font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors flex items-center justify-center gap-2 text-xs"
+                >
+                  <Printer className="w-4 h-4 text-slate-600" />
+                  <span>הדפסה ישירה / שמירה כ-PDF דרך הדפדפן</span>
+                </button>
               </div>
 
             </div>
