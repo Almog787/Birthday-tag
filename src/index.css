@@ -46,14 +46,22 @@
     transform: none !important;
     margin: 0 !important;
     box-shadow: none !important;
-    border: none !important;
     page-break-after: always !important;
     break-after: page !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .a4-print-page.portrait {
     width: 210mm !important;
     height: 297mm !important;
     min-height: 297mm !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+  }
+
+  .a4-print-page.landscape {
+    width: 297mm !important;
+    height: 210mm !important;
+    min-height: 210mm !important;
   }
 
   .no-print {

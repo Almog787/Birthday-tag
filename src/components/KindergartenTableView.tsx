@@ -135,6 +135,22 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
       return;
     }
     setColumns(columns.filter((_, i) => i !== idx));
+    setCellData((prev) => {
+      const updated: Record<string, Record<number, string>> = {};
+      Object.entries(prev).forEach(([rowId, rowCells]) => {
+        const newRowCells: Record<number, string> = {};
+        Object.entries(rowCells).forEach(([cIdxStr, val]) => {
+          const cIdx = parseInt(cIdxStr, 10);
+          if (cIdx < idx) {
+            newRowCells[cIdx] = val;
+          } else if (cIdx > idx) {
+            newRowCells[cIdx - 1] = val;
+          }
+        });
+        updated[rowId] = newRowCells;
+      });
+      return updated;
+    });
   };
 
   // Edit column
@@ -202,6 +218,11 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
         pageEl.style.transform = 'none';
         pageEl.style.margin = '0';
         pageEl.style.boxShadow = 'none';
+
+        // Synchronize all typed input values to DOM value attributes so cloned nodes retain content
+        pageEl.querySelectorAll('input').forEach((input) => {
+          input.setAttribute('value', input.value);
+        });
 
         await new Promise((resolve) => setTimeout(resolve, 80));
 
@@ -611,9 +632,9 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-xs text-slate-500">זום:</span>
-            {[65, 75, 85, 100].map((z) => (
+            {[45, 60, 75, 90, 100].map((z) => (
               <button
                 key={z}
                 onClick={() => setTableZoom(z)}
@@ -648,7 +669,9 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
         <div className="print-sheet-container flex justify-center overflow-x-auto pb-10">
           <div
             ref={tableSheetRef}
-            className={`a4-print-page bg-white shadow-xl rounded-sm border border-slate-300 relative text-right overflow-hidden transition-transform duration-200 flex flex-col justify-between p-6 ${
+            className={`a4-print-page ${
+              isLandscape ? 'landscape' : 'portrait'
+            } bg-white shadow-xl rounded-sm border border-slate-300 relative text-right overflow-hidden transition-transform duration-200 flex flex-col justify-between p-6 ${
               showKindergartenFrame ? activeTheme.frameBorderClass : ''
             }`}
             style={{

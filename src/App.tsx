@@ -163,9 +163,13 @@ export default function App() {
     setTags([...tags, copyTag]);
   };
 
-  // Bulk import callback
-  const handleBulkImport = (newTags: TagItem[]) => {
-    setTags(newTags);
+  // Bulk import callback (supports append or replace)
+  const handleBulkImport = (newTags: TagItem[], mode: 'replace' | 'append' = 'replace') => {
+    if (mode === 'append') {
+      setTags((prev) => [...prev, ...newTags]);
+    } else {
+      setTags(newTags);
+    }
   };
 
   // Presets for tag modes (Mode 1: Full, Mode 2: Clean without illustrations, Mode 3: Name only)
@@ -359,18 +363,18 @@ export default function App() {
       
       {/* Top Header Navigation */}
       <header className="no-print bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 md:py-0 md:h-16 flex flex-wrap md:flex-nowrap items-center justify-between gap-2.5">
           
           {/* Logo & Title */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-400 flex items-center justify-center text-white shadow-md font-extrabold text-xl shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-400 flex items-center justify-center text-white shadow-md font-extrabold text-lg sm:text-xl shrink-0">
               {mainView === 'tags' ? '🎈' : '📋'}
             </div>
             <div>
-              <h1 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">
+              <h1 className="text-sm sm:text-base md:text-lg font-black text-slate-900 leading-tight">
                 {mainView === 'tags' ? 'מעצב תגי יום הולדת לילדים' : 'טבלאות ומעקב מעוצבות לגן'}
               </h1>
-              <p className="text-xs text-slate-500 hidden sm:block">
+              <p className="text-[11px] text-slate-500 hidden sm:block">
                 {mainView === 'tags'
                   ? `עיצוב תגים, תאריכים מוגדלים והורדת PDF (${tags.length} ילדים)`
                   : `מעקב ציוד, מגבונים ותורנויות שבת להדפסה ול-PDF`}
@@ -378,11 +382,11 @@ export default function App() {
             </div>
           </div>
 
-          {/* Module Switcher Tabs in Center / Right */}
-          <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
+          {/* Module Switcher Tabs in Center */}
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 order-last md:order-none w-full md:w-auto justify-center">
             <button
               onClick={() => setMainView('tags')}
-              className={`px-3 py-1.5 text-xs sm:text-sm font-bold rounded-lg transition-all flex items-center gap-1.5 ${
+              className={`flex-1 md:flex-none px-3 py-1 text-xs sm:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                 mainView === 'tags'
                   ? 'bg-white text-rose-600 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
@@ -394,7 +398,7 @@ export default function App() {
 
             <button
               onClick={() => setMainView('tables')}
-              className={`px-3 py-1.5 text-xs sm:text-sm font-bold rounded-lg transition-all flex items-center gap-1.5 ${
+              className={`flex-1 md:flex-none px-3 py-1 text-xs sm:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                 mainView === 'tables'
                   ? 'bg-white text-rose-600 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
@@ -406,21 +410,21 @@ export default function App() {
           </div>
 
           {/* Header Action Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <button
               onClick={() => setIsBulkModalOpen(true)}
-              className="px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors hidden md:flex items-center gap-1.5"
+              className="px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-1.5"
               title="הדבקה מהירה של רשימת ילדים מוואטסאפ או אקסל"
             >
               <Upload className="w-3.5 h-3.5 text-slate-600" />
-              <span>הדבקה מהירה</span>
+              <span className="hidden sm:inline">הדבקה מהירה</span>
             </button>
 
             {mainView === 'tags' && (
               <>
                 <button
                   onClick={() => window.print()}
-                  className="px-3 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-1.5"
+                  className="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-1.5"
                   title="הדפסה ישירה במדפסת"
                 >
                   <Printer className="w-4 h-4 text-slate-600" />
@@ -430,7 +434,7 @@ export default function App() {
                 <button
                   onClick={handleDownloadPDF}
                   disabled={isExporting}
-                  className="px-3.5 py-1.5 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 rounded-lg shadow-xs hover:shadow transition-all flex items-center gap-1.5 disabled:opacity-50"
+                  className="px-3 sm:px-3.5 py-1.5 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 rounded-lg shadow-xs hover:shadow transition-all flex items-center gap-1.5 disabled:opacity-50"
                 >
                   {isExporting ? (
                     <>
@@ -1203,9 +1207,9 @@ export default function App() {
               </div>
 
               {/* Preview Zoom Controls */}
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="text-xs text-slate-500 ml-1">זום:</span>
-                {[70, 85, 100].map((zoomVal) => (
+                {[50, 70, 85, 100].map((zoomVal) => (
                   <button
                     key={zoomVal}
                     onClick={() => setPreviewZoom(zoomVal)}
@@ -1235,7 +1239,7 @@ export default function App() {
                 return (
                   <div
                     key={pageIdx}
-                    className="a4-print-page bg-white shadow-xl rounded-sm border border-slate-300 relative text-right overflow-hidden transition-transform duration-200"
+                    className="a4-print-page portrait bg-white shadow-xl rounded-sm border border-slate-300 relative text-right overflow-hidden transition-transform duration-200"
                     style={{
                       width: '210mm',
                       height: '297mm',
@@ -1325,18 +1329,26 @@ export default function App() {
 
                             {/* Middle Center: Child Name AND Birth Date Directly Underneath */}
                             <div className="relative z-10 my-auto flex-1 flex flex-col items-center justify-center text-center py-1">
-                              {/* Child Name */}
-                              <h2 className="text-2xl sm:text-3xl font-black tracking-tight leading-none drop-shadow-xs truncate max-w-full px-1">
+                              {/* Child Name with dynamic scaling for longer double names */}
+                              <h2
+                                className={`${
+                                  tag.name.length > 7
+                                    ? 'text-xl sm:text-2xl'
+                                    : 'text-2xl sm:text-3xl'
+                                } font-black tracking-tight leading-none drop-shadow-xs truncate max-w-full px-1`}
+                              >
                                 {tag.name}
                               </h2>
 
-                              {/* Birth Date Directly Under Name (User's specific request) */}
+                              {/* Birth Date Directly Under Name (Theme-aware colors for light & dark themes) */}
                               {showDate && datePlacement === 'under_name' && (
                                 <div
                                   className={`mt-1 font-black tracking-tight flex items-center justify-center gap-1.5 transition-all ${
+                                    selectedTheme.textColor
+                                  } ${
                                     dateSize === 'large'
-                                      ? 'text-xl sm:text-2xl text-slate-900'
-                                      : 'text-sm sm:text-base font-bold text-slate-700'
+                                      ? 'text-xl sm:text-2xl'
+                                      : 'text-sm sm:text-base font-bold'
                                   }`}
                                 >
                                   {showDecorations && (
@@ -1345,7 +1357,7 @@ export default function App() {
                                   <span
                                     className={
                                       dateSize === 'large'
-                                        ? 'border-b-2 border-rose-400/60 pb-0.5'
+                                        ? 'border-b-2 border-current/40 pb-0.5'
                                         : ''
                                     }
                                   >
@@ -1357,38 +1369,40 @@ export default function App() {
                               )}
                             </div>
 
-                            {/* Bottom Row: Footer Decoration or Legacy Bottom Date */}
-                            <div className="relative z-10 flex items-center justify-between pt-1 border-t border-slate-200/50 min-h-[28px]">
-                              {showDecorations ? (
-                                <div className="flex items-center gap-1 text-xs opacity-75 font-medium shrink-0">
-                                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                                  <span>מזל טוב!</span>
-                                </div>
-                              ) : (
-                                <div />
-                              )}
+                            {/* Bottom Row: Footer Decoration or Legacy Bottom Date (Hidden in text-only clean mode) */}
+                            {(showDecorations || (showDate && datePlacement === 'bottom')) && (
+                              <div className="relative z-10 flex items-center justify-between pt-1 border-t border-slate-200/50 min-h-[28px]">
+                                {showDecorations ? (
+                                  <div className="flex items-center gap-1 text-xs opacity-75 font-medium shrink-0">
+                                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                                    <span>מזל טוב!</span>
+                                  </div>
+                                ) : (
+                                  <div />
+                                )}
 
-                              {/* If date is placed at the bottom */}
-                              {showDate && datePlacement === 'bottom' && (
-                                <div
-                                  className={`px-2.5 py-0.5 rounded-md font-mono text-xs font-bold ${selectedTheme.badgeBg} ${selectedTheme.accentColor} flex items-center gap-1 shrink-0`}
-                                >
-                                  <Calendar className="w-3 h-3 inline" />
-                                  <span>
-                                    {dateFormat === 'hebrew_prefix'
-                                      ? `בתאריך ${tag.date}`
-                                      : tag.date}
+                                {/* If date is placed at the bottom */}
+                                {showDate && datePlacement === 'bottom' && (
+                                  <div
+                                    className={`px-2.5 py-0.5 rounded-md font-mono text-xs font-bold ${selectedTheme.badgeBg} ${selectedTheme.accentColor} flex items-center gap-1 shrink-0`}
+                                  >
+                                    <Calendar className="w-3 h-3 inline" />
+                                    <span>
+                                      {dateFormat === 'hebrew_prefix'
+                                        ? `בתאריך ${tag.date}`
+                                        : tag.date}
+                                    </span>
+                                  </div>
+                                )}
+
+                                {/* If date is already under the name, show subtle congratulations message */}
+                                {(!showDate || datePlacement === 'under_name') && showDecorations && (
+                                  <span className="text-[11px] font-semibold opacity-60">
+                                    יום הולדת שמח 🎉
                                   </span>
-                                </div>
-                              )}
-
-                              {/* If date is already under the name, show subtle congratulations message */}
-                              {(!showDate || datePlacement === 'under_name') && showDecorations && (
-                                <span className="text-[11px] font-semibold opacity-60">
-                                  יום הולדת שמח 🎉
-                                </span>
-                              )}
-                            </div>
+                                )}
+                              </div>
+                            )}
 
                           </div>
                         );
