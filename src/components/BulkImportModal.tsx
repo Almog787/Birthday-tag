@@ -23,9 +23,36 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
 
   const handleParseAndImport = (mode: 'replace' | 'append') => {
     setError(null);
-    if (!text.trim()) {
+    const trimmed = text.trim();
+    if (!trimmed) {
       setError('אנא הדבק רשימת שמות או תאריכים.');
       return;
+    }
+
+    // Check if pasted content is JSON format
+    if (trimmed.startsWith('[') || trimmed.startsWith('{')) {
+      try {
+        const json = JSON.parse(trimmed);
+        const list = Array.isArray(json) ? json : json.children || json.tags || [];
+        if (Array.isArray(list) && list.length > 0) {
+          const parsedJSON: TagItem[] = list
+            .map((item: any, idx: number) => ({
+              id: String(item.id || `${Date.now()}-${idx}`),
+              name: String(item.name || item.childName || '').trim(),
+              date: String(item.date || item.birthDate || '01.01').trim()
+            }))
+            .filter((t: TagItem) => t.name);
+
+          if (parsedJSON.length > 0) {
+            trackBulkImportSubmit(parsedJSON.length);
+            onImport(parsedJSON, mode);
+            onClose();
+            return;
+          }
+        }
+      } catch {
+        // Fall back to line-by-line parsing
+      }
     }
 
     const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);

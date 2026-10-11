@@ -21,7 +21,9 @@ import {
   FileSpreadsheet,
   Upload,
   Settings,
-  Sparkle
+  Sparkle,
+  FileCode,
+  FileJson
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { toJpeg, toPng } from 'html-to-image';
@@ -142,6 +144,7 @@ export default function App() {
 
   // Refs
   const printPagesRef = useRef<HTMLDivElement>(null);
+  const jsonFileInputRef = useRef<HTMLInputElement>(null);
 
   // Filtered tags for manager tab
   const filteredTags = tags.filter(
@@ -202,6 +205,59 @@ export default function App() {
     } else {
       setTags(newTags);
     }
+  };
+
+  // Export children list to downloadable children.json file
+  const handleExportJSON = () => {
+    trackEvent('export_children_json', { count: tags.length });
+    const jsonStr = JSON.stringify(tags, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'children.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Import children list directly from a selected children.json file
+  const handleImportJSONFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const content = event.target?.result as string;
+        const parsed = JSON.parse(content);
+        const list = Array.isArray(parsed) ? parsed : parsed.children || parsed.tags || [];
+        if (Array.isArray(list) && list.length > 0) {
+          const validated: TagItem[] = list
+            .map((item: any, idx: number) => ({
+              id: String(item.id || `${Date.now()}-${idx}`),
+              name: String(item.name || item.childName || '').trim(),
+              date: String(item.date || item.birthDate || '01.01').trim()
+            }))
+            .filter((item: TagItem) => item.name);
+
+          if (validated.length > 0) {
+            trackEvent('import_children_json_success', { count: validated.length });
+            setTags(validated);
+            alert(`קובץ JSON נטען בהצלחה! סה"כ ${validated.length} ילדים.`);
+          } else {
+            alert('קובץ ה-JSON אינו מכיל שמות תקינים.');
+          }
+        } else {
+          alert('מבנה קובץ ה-JSON אינו תקין. עליו להכיל מערך של שמות ותאריכים.');
+        }
+      } catch (err) {
+        console.error('Failed to parse JSON file:', err);
+        alert('שגיאה בפענוח קובץ ה-JSON. אנא וודא שהקובץ תקין.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
   };
 
   // Presets for tag modes (Mode 1: Full, Mode 2: Clean without illustrations, Mode 3: Name only)
@@ -1069,11 +1125,43 @@ export default function App() {
             {activeTab === 'names' && (
               <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
                 
-                <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-bold text-slate-800">
-                    עריכת רשימת השמות ({tags.length})
-                  </h2>
-                  <div className="flex items-center gap-2">
+                {/* Hidden JSON file input */}
+                <input
+                  type="file"
+                  ref={jsonFileInputRef}
+                  accept=".json"
+                  onChange={handleImportJSONFile}
+                  className="hidden"
+                />
+
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <h2 className="text-sm font-bold text-slate-800">
+                      עריכת רשימת השמות ({tags.length})
+                    </h2>
+                    <span className="text-[11px] text-slate-500 font-mono">
+                      קובץ מקור: children.json
+                    </span>
+                  </div>
+                  <div className="flex items-center flex-wrap gap-1.5">
+                    <button
+                      onClick={() => jsonFileInputRef.current?.click()}
+                      className="text-xs text-indigo-700 hover:text-indigo-900 font-semibold flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-2 py-1 rounded-md transition-colors"
+                      title="טען רשימה מקובץ children.json מהמחשב"
+                    >
+                      <FileCode className="w-3.5 h-3.5" />
+                      <span>טען JSON</span>
+                    </button>
+
+                    <button
+                      onClick={handleExportJSON}
+                      className="text-xs text-emerald-700 hover:text-emerald-900 font-semibold flex items-center gap-1 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2 py-1 rounded-md transition-colors"
+                      title="הורד את רשימת הילדים העדכנית כקובץ children.json"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>הורד JSON</span>
+                    </button>
+
                     <button
                       onClick={() => {
                         trackBulkImportOpen();
@@ -1084,10 +1172,11 @@ export default function App() {
                       <Upload className="w-3.5 h-3.5" />
                       <span>הדבקה מהירה</span>
                     </button>
+
                     <button
                       onClick={handleResetToOriginal}
                       className="text-xs text-slate-500 hover:text-slate-800 font-medium flex items-center gap-1"
-                      title="איפוס ל-29 שמות מקוריים"
+                      title="איפוס לרשימת ה-JSON המקורית מהמאגר"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
                       <span>אפס</span>
