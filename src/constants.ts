@@ -22,7 +22,7 @@ export function hexToRgba(hex: string, alpha: number = 0.35): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-// 29 Children loaded directly from editable JSON file (src/data/children.json & children.json)
+// 29 Children loaded directly from editable JSON file (src/data/children.json)
 export const INITIAL_TAGS: TagItem[] = childrenData as TagItem[];
 
 export const THEMES: ThemePreset[] = [
