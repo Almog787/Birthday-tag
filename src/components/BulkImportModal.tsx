@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Upload, Check, AlertCircle } from 'lucide-react';
 import { TagItem } from '../types';
+import { trackBulkImportSubmit } from '../analytics';
 
 interface BulkImportModalProps {
   isOpen: boolean;
@@ -65,6 +66,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
       return;
     }
 
+    trackBulkImportSubmit(parsed.length);
     onImport(parsed, mode);
     onClose();
   };

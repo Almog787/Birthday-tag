@@ -20,6 +20,19 @@ import { toJpeg, toPng } from 'html-to-image';
 import html2canvas from 'html2canvas';
 import { TagItem, TableTemplate, TableDesignTheme } from '../types';
 import { TABLE_TEMPLATES, TABLE_DESIGN_THEMES } from '../constants';
+import {
+  trackTableTemplateSelect,
+  trackTableOrientationChange,
+  trackTableDesignThemeChange,
+  trackTableDensityChange,
+  trackTableAddColumn,
+  trackTableDeleteColumn,
+  trackTableSyncWithTags,
+  trackDownloadPDF,
+  trackPrintTable,
+  trackZoomControl,
+  trackEvent
+} from '../analytics';
 
 interface KindergartenTableViewProps {
   tags: TagItem[];
@@ -114,6 +127,7 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
 
   // Handle template change
   const handleSelectTemplate = (template: TableTemplate) => {
+    trackTableTemplateSelect(template.id, template.name);
     setSelectedTemplateId(template.id);
     setTableTitle(template.title);
     setColumns([...template.columns]);
@@ -124,6 +138,7 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
   const handleAddColumn = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newColInput.trim()) return;
+    trackTableAddColumn(newColInput.trim());
     setColumns([...columns, newColInput.trim()]);
     setNewColInput('');
   };
@@ -134,6 +149,7 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
       alert('יש להשאיר לפחות עמודה אחת בטבלה.');
       return;
     }
+    trackTableDeleteColumn(idx);
     setColumns(columns.filter((_, i) => i !== idx));
     setCellData((prev) => {
       const updated: Record<string, Record<number, string>> = {};
@@ -159,6 +175,7 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
       setEditingColIdx(null);
       return;
     }
+    trackEvent('edit_table_column_title', { title: newColTitle.trim(), column_index: idx });
     const updated = [...columns];
     updated[idx] = newColTitle.trim();
     setColumns(updated);
@@ -183,6 +200,14 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
   // PDF Export
   const handleDownloadTablePDF = async () => {
     if (!tableSheetRef.current) return;
+    trackDownloadPDF('tables', {
+      template_id: selectedTemplateId,
+      orientation,
+      density,
+      rows_count: tags.length,
+      columns_count: columns.length,
+      theme_id: selectedThemeId
+    });
     setIsExporting(true);
     setExportError(null);
     setExportSuccess(false);
@@ -331,7 +356,10 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
               <span>בחירת תבנית טבלה לגן:</span>
             </h2>
             <button
-              onClick={onSyncFromTags}
+              onClick={() => {
+                trackTableSyncWithTags(tags.length);
+                onSyncFromTags();
+              }}
               className="text-xs font-semibold text-rose-600 hover:text-rose-700 flex items-center gap-1 bg-rose-50 px-2.5 py-1 rounded-lg"
               title="סנכרן שמות עדכניים מהתגים"
             >
@@ -402,7 +430,10 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
               {TABLE_DESIGN_THEMES.map((th) => (
                 <button
                   key={th.id}
-                  onClick={() => setSelectedThemeId(th.id)}
+                  onClick={() => {
+                    trackTableDesignThemeChange(th.id, th.name);
+                    setSelectedThemeId(th.id);
+                  }}
                   className={`p-2 rounded-xl border text-right text-xs transition-all flex items-center justify-between ${
                     selectedThemeId === th.id
                       ? 'border-rose-500 ring-2 ring-rose-200 bg-rose-50/50 font-bold'
@@ -510,7 +541,10 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
             </label>
             <div className="grid grid-cols-2 gap-2">
               <button
-                onClick={() => setOrientation('portrait')}
+                onClick={() => {
+                  trackTableOrientationChange(false);
+                  setOrientation('portrait');
+                }}
                 className={`py-2 text-xs font-semibold rounded-xl border transition-all text-center ${
                   orientation === 'portrait'
                     ? 'border-rose-500 bg-rose-50 text-rose-700 font-bold ring-2 ring-rose-200'
@@ -520,7 +554,10 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
                 📄 דף לאורך (Portrait)
               </button>
               <button
-                onClick={() => setOrientation('landscape')}
+                onClick={() => {
+                  trackTableOrientationChange(true);
+                  setOrientation('landscape');
+                }}
                 className={`py-2 text-xs font-semibold rounded-xl border transition-all text-center ${
                   orientation === 'landscape'
                     ? 'border-rose-500 bg-rose-50 text-rose-700 font-bold ring-2 ring-rose-200'
@@ -539,7 +576,10 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
             </label>
             <div className="grid grid-cols-2 gap-2">
               <button
-                onClick={() => setDensity('compact')}
+                onClick={() => {
+                  trackTableDensityChange('compact');
+                  setDensity('compact');
+                }}
                 className={`py-2 text-xs font-semibold rounded-xl border transition-all text-center ${
                   density === 'compact'
                     ? 'border-rose-500 bg-rose-50 text-rose-700 font-bold ring-2 ring-rose-200'
@@ -549,7 +589,10 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
                 קומפקטי (מתאים ל-30 ילדים בדף)
               </button>
               <button
-                onClick={() => setDensity('spacious')}
+                onClick={() => {
+                  trackTableDensityChange('spacious');
+                  setDensity('spacious');
+                }}
                 className={`py-2 text-xs font-semibold rounded-xl border transition-all text-center ${
                   density === 'spacious'
                     ? 'border-rose-500 bg-rose-50 text-rose-700 font-bold ring-2 ring-rose-200'
@@ -568,7 +611,10 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
               <input
                 type="checkbox"
                 checked={showRowNumbers}
-                onChange={(e) => setShowRowNumbers(e.target.checked)}
+                onChange={(e) => {
+                  trackEvent('toggle_table_row_numbers', { enabled: e.target.checked });
+                  setShowRowNumbers(e.target.checked);
+                }}
                 className="w-4 h-4 accent-rose-500 rounded cursor-pointer"
               />
             </label>
@@ -578,7 +624,10 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
               <input
                 type="checkbox"
                 checked={showKindergartenFrame}
-                onChange={(e) => setShowKindergartenFrame(e.target.checked)}
+                onChange={(e) => {
+                  trackEvent('toggle_table_kindergarten_frame', { enabled: e.target.checked });
+                  setShowKindergartenFrame(e.target.checked);
+                }}
                 className="w-4 h-4 accent-rose-500 rounded cursor-pointer"
               />
             </label>
@@ -605,7 +654,10 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
             </button>
 
             <button
-              onClick={() => window.print()}
+              onClick={() => {
+                trackPrintTable(tags.length, columns.length, isLandscape);
+                window.print();
+              }}
               className="w-full py-2 px-4 font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors flex items-center justify-center gap-1.5 text-xs"
             >
               <Printer className="w-4 h-4 text-slate-600" />
@@ -637,7 +689,10 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
             {[45, 60, 75, 90, 100].map((z) => (
               <button
                 key={z}
-                onClick={() => setTableZoom(z)}
+                onClick={() => {
+                  trackZoomControl(z, 'tables');
+                  setTableZoom(z);
+                }}
                 className={`px-2 py-1 text-xs rounded-lg transition-colors ${
                   tableZoom === z
                     ? 'bg-rose-500 text-white font-bold'
