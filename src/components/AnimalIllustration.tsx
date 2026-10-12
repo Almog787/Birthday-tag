@@ -9,8 +9,8 @@ interface AnimalIllustrationProps {
 }
 
 /**
- * High-quality vector illustrations for animals with distinct countable legs (2 or 4).
- * Supports both full color mode and black & white coloring-book outline mode.
+ * Enhanced high-quality vector illustrations for animals with distinct, countable legs (2 or 4).
+ * Supports both full vibrant color mode and black & white coloring-book outline mode.
  */
 export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
   animalId,
@@ -32,32 +32,32 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
 
   switch (animalId) {
     // ==========================================
-    // 2 LEGS (הולכים על שתיים)
+    // 2 LEGS (הולכים על שתיים 👣)
     // ==========================================
 
-    case 'rooster': // תרנגול - 2 distinct legs with claws, comb, wattle
+    case 'rooster': // תרנגול - 2 distinct legs with toes, comb, wattle
       return (
         <svg {...commonSvgProps}>
-          {/* 2 Legs */}
-          <path d="M 44 68 L 44 88 M 40 88 L 48 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
-          <path d="M 56 68 L 56 88 M 52 88 L 60 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
+          {/* 2 Standing Chicken Legs with claws */}
+          <path d="M 44 66 L 44 88 M 38 88 L 48 88 M 41 84 L 47 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
+          <path d="M 58 66 L 58 88 M 52 88 L 62 88 M 55 84 L 61 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
           {/* Tail Feathers */}
           <path
-            d="M 32 50 C 15 45 10 25 22 25 C 28 32 30 40 35 48"
+            d="M 32 50 C 12 44 8 22 22 22 C 28 30 30 40 36 48"
             fill={isColoring ? '#ffffff' : '#059669'}
             stroke={strokeColor}
             strokeWidth={strokeW}
           />
           <path
-            d="M 28 55 C 10 55 8 35 18 35 C 24 42 28 48 32 55"
+            d="M 28 56 C 8 56 6 34 18 34 C 24 42 28 48 33 56"
             fill={isColoring ? '#ffffff' : '#2563eb'}
             stroke={strokeColor}
             strokeWidth={strokeW}
           />
-          {/* Body */}
+          {/* Main Body */}
           <ellipse
             cx="48"
-            cy="56"
+            cy="54"
             rx="18"
             ry="15"
             fill={isColoring ? '#ffffff' : '#f59e0b'}
@@ -66,14 +66,14 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
           />
           {/* Wing */}
           <path
-            d="M 42 50 C 50 48 54 58 48 64 C 42 66 38 58 42 50 Z"
+            d="M 42 48 C 52 46 56 56 50 62 C 44 64 38 56 42 48 Z"
             fill={isColoring ? '#ffffff' : '#d97706'}
             stroke={strokeColor}
             strokeWidth={strokeW}
           />
           {/* Neck & Head */}
           <path
-            d="M 58 55 C 64 50 66 35 60 28 C 55 24 50 28 52 35 Z"
+            d="M 58 54 C 64 48 66 34 60 27 C 55 24 50 28 52 35 Z"
             fill={isColoring ? '#ffffff' : '#f59e0b'}
             stroke={strokeColor}
             strokeWidth={strokeW}
@@ -88,7 +88,7 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
           />
           {/* Comb (Red) */}
           <path
-            d="M 60 23 C 58 15 65 14 66 22 C 69 14 76 17 73 24 Z"
+            d="M 60 23 C 58 14 65 13 66 21 C 69 13 76 16 73 23 Z"
             fill={isColoring ? '#ffffff' : '#ef4444'}
             stroke={strokeColor}
             strokeWidth={strokeW}
@@ -117,12 +117,12 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
       return (
         <svg {...commonSvgProps}>
           {/* 2 Webbed Feet */}
-          <path d="M 42 70 L 40 86 M 34 88 C 40 84 46 86 46 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill={isColoring ? '#ffffff' : '#f97316'} />
-          <path d="M 58 70 L 60 86 M 54 88 C 60 84 66 86 66 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill={isColoring ? '#ffffff' : '#f97316'} />
+          <path d="M 42 68 L 40 86 M 33 88 C 39 84 46 86 46 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill={isColoring ? '#ffffff' : '#f97316'} />
+          <path d="M 58 68 L 60 86 M 53 88 C 59 84 66 86 66 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill={isColoring ? '#ffffff' : '#f97316'} />
           {/* Body */}
           <ellipse
             cx="48"
-            cy="56"
+            cy="54"
             rx="24"
             ry="16"
             fill={isColoring ? '#ffffff' : '#fde047'}
@@ -131,14 +131,14 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
           />
           {/* Wing */}
           <path
-            d="M 38 52 C 48 48 56 56 46 64 C 40 66 34 60 38 52 Z"
+            d="M 38 50 C 48 46 56 54 46 62 C 40 64 34 58 38 50 Z"
             fill={isColoring ? '#ffffff' : '#eab308'}
             stroke={strokeColor}
             strokeWidth={strokeW}
           />
           {/* Tail */}
           <path
-            d="M 25 54 C 20 50 18 44 26 48 Z"
+            d="M 24 52 C 18 48 16 42 25 46 Z"
             fill={isColoring ? '#ffffff' : '#fde047'}
             stroke={strokeColor}
             strokeWidth={strokeW}
@@ -146,7 +146,7 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
           {/* Head */}
           <circle
             cx="66"
-            cy="36"
+            cy="34"
             r="13"
             fill={isColoring ? '#ffffff' : '#fde047'}
             stroke={strokeColor}
@@ -154,16 +154,15 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
           />
           {/* Duck Bill */}
           <path
-            d="M 74 36 C 88 35 88 44 74 44 Z"
+            d="M 74 34 C 88 33 88 42 74 42 Z"
             fill={isColoring ? '#ffffff' : '#f97316'}
             stroke={strokeColor}
             strokeWidth={strokeW}
           />
           {/* Eye */}
-          <circle cx="68" cy="33" r="2.5" fill={strokeColor} />
-          <circle cx="69" cy="32" r="0.8" fill="#ffffff" />
-          {/* Cute cheek */}
-          {!isColoring && <circle cx="64" cy="40" r="3" fill="#f43f5e" opacity="0.4" />}
+          <circle cx="68" cy="31" r="2.5" fill={strokeColor} />
+          <circle cx="69" cy="30" r="0.8" fill="#ffffff" />
+          {!isColoring && <circle cx="64" cy="38" r="3" fill="#f43f5e" opacity="0.35" />}
         </svg>
       );
 
@@ -218,7 +217,6 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
             stroke={strokeColor}
             strokeWidth={strokeW}
           />
-          {/* Bowtie */}
           {!isColoring && (
             <path d="M 44 48 L 56 52 L 44 52 L 56 48 Z" fill="#ef4444" stroke={strokeColor} strokeWidth="1.5" />
           )}
@@ -228,9 +226,9 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
     case 'parrot': // תוכי - 2 legs, vibrant beak and feathers
       return (
         <svg {...commonSvgProps}>
-          {/* 2 Feet standing on a branch */}
-          <path d="M 46 72 L 46 84 M 42 84 L 49 84" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
-          <path d="M 58 72 L 58 84 M 54 84 L 61 84" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
+          {/* 2 Feet standing */}
+          <path d="M 46 70 L 46 86 M 41 86 L 49 86" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
+          <path d="M 58 70 L 58 86 M 53 86 L 61 86" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
           {/* Long Tail */}
           <path
             d="M 38 60 C 25 72 20 90 22 92 C 26 92 34 78 40 68 Z"
@@ -281,12 +279,12 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
       return (
         <svg {...commonSvgProps}>
           {/* 2 Talons */}
-          <path d="M 40 76 L 40 88 M 35 88 L 45 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
-          <path d="M 60 76 L 60 88 M 55 88 L 65 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
+          <path d="M 40 76 L 40 88 M 34 88 L 46 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
+          <path d="M 60 76 L 60 88 M 54 88 L 66 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
           {/* Body */}
           <ellipse
             cx="50"
-            cy="55"
+            cy="54"
             rx="24"
             ry="26"
             fill={isColoring ? '#ffffff' : '#854d0e'}
@@ -306,7 +304,6 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
             stroke={strokeColor}
             strokeWidth={strokeW}
           />
-          {/* Belly Feathers */}
           <path d="M 45 56 Q 50 60 55 56 M 45 64 Q 50 68 55 64" stroke={strokeColor} strokeWidth="1.5" fill="none" />
           {/* Big Owl Eyes */}
           <circle cx="38" cy="38" r="10" fill={isColoring ? '#ffffff' : '#fde047'} stroke={strokeColor} strokeWidth={strokeW} />
@@ -324,8 +321,8 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
       return (
         <svg {...commonSvgProps}>
           {/* 2 Stick Legs */}
-          <path d="M 44 68 L 40 86 M 35 88 L 44 86 L 47 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
-          <path d="M 56 68 L 56 86 M 52 88 L 57 86 L 62 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
+          <path d="M 44 68 L 40 86 M 34 88 L 46 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
+          <path d="M 56 68 L 56 86 M 50 88 L 62 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
           {/* Tail */}
           <polygon points="26,52 10,48 18,62 30,58" fill={isColoring ? '#ffffff' : '#0284c7'} stroke={strokeColor} strokeWidth={strokeW} />
           {/* Body */}
@@ -347,26 +344,26 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
         </svg>
       );
 
-    case 'kangaroo': // קנגורו - 2 large hind legs, tail, pouch
+    case 'kangaroo': // קנגורו - 2 powerful standing hind legs + small upper paws + baby joey in pouch
       return (
         <svg {...commonSvgProps}>
-          {/* Strong Tail for balance */}
+          {/* Tail for balance */}
           <path
-            d="M 30 68 C 14 74 12 86 18 88 C 24 88 32 80 40 74 Z"
+            d="M 28 66 C 10 74 8 86 16 88 C 24 88 32 80 40 72 Z"
             fill={isColoring ? '#ffffff' : '#b45309'}
             stroke={strokeColor}
             strokeWidth={strokeW}
           />
-          {/* 2 Big Hind Legs */}
+          {/* 2 Big Powerful Hind Legs (Clearly 2 legs) */}
           <path
-            d="M 34 62 C 34 76 28 86 42 88 C 48 88 48 80 44 72"
+            d="M 32 60 C 32 76 26 86 42 88 C 48 88 48 78 44 70"
             fill={isColoring ? '#ffffff' : '#d97706'}
             stroke={strokeColor}
             strokeWidth={strokeW}
             strokeLinecap="round"
           />
           <path
-            d="M 48 62 C 48 76 44 86 58 88 C 64 88 64 80 58 72"
+            d="M 48 60 C 48 76 42 86 58 88 C 64 88 64 78 58 70"
             fill={isColoring ? '#ffffff' : '#d97706'}
             stroke={strokeColor}
             strokeWidth={strokeW}
@@ -375,7 +372,7 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
           {/* Body */}
           <ellipse
             cx="48"
-            cy="52"
+            cy="50"
             rx="16"
             ry="22"
             fill={isColoring ? '#ffffff' : '#d97706'}
@@ -384,30 +381,33 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
           />
           {/* Pouch */}
           <path
-            d="M 44 56 C 44 66 54 66 54 56 Z"
+            d="M 42 54 C 42 66 54 66 54 54 Z"
             fill={isColoring ? '#ffffff' : '#fef3c7'}
             stroke={strokeColor}
             strokeWidth={strokeW}
           />
-          {/* 2 Small Paws in front */}
-          <path d="M 54 48 L 62 52 M 52 50 L 60 55" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" />
-          {/* Head & Ears */}
-          <circle cx="58" cy="32" r="10" fill={isColoring ? '#ffffff' : '#d97706'} stroke={strokeColor} strokeWidth={strokeW} />
-          {/* Tall Ears */}
-          <ellipse cx="54" cy="18" rx="4" ry="10" fill={isColoring ? '#ffffff' : '#d97706'} stroke={strokeColor} strokeWidth={strokeW} />
-          <ellipse cx="62" cy="18" rx="4" ry="10" fill={isColoring ? '#ffffff' : '#d97706'} stroke={strokeColor} strokeWidth={strokeW} />
+          {/* Baby joey ears popping out of pouch */}
+          {!isColoring && (
+            <circle cx="48" cy="54" r="3.5" fill="#b45309" stroke={strokeColor} strokeWidth="1" />
+          )}
+          {/* 2 Small upper paws in front */}
+          <path d="M 54 44 L 63 47 M 52 47 L 61 51" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" />
+          {/* Head & Long Ears */}
+          <circle cx="58" cy="30" r="10" fill={isColoring ? '#ffffff' : '#d97706'} stroke={strokeColor} strokeWidth={strokeW} />
+          <ellipse cx="54" cy="16" rx="4" ry="10" fill={isColoring ? '#ffffff' : '#d97706'} stroke={strokeColor} strokeWidth={strokeW} />
+          <ellipse cx="62" cy="16" rx="4" ry="10" fill={isColoring ? '#ffffff' : '#d97706'} stroke={strokeColor} strokeWidth={strokeW} />
           {/* Snout & Eye */}
-          <ellipse cx="66" cy="34" rx="4" ry="3" fill={isColoring ? '#ffffff' : '#b45309'} stroke={strokeColor} strokeWidth="1.5" />
-          <circle cx="58" cy="30" r="2" fill={strokeColor} />
+          <ellipse cx="66" cy="32" rx="4" ry="3" fill={isColoring ? '#ffffff' : '#b45309'} stroke={strokeColor} strokeWidth="1.5" />
+          <circle cx="58" cy="28" r="2" fill={strokeColor} />
         </svg>
       );
 
     case 'monkey': // קוף - standing upright on 2 legs
       return (
         <svg {...commonSvgProps}>
-          {/* Long Curly Tail */}
+          {/* Curly Tail */}
           <path
-            d="M 32 60 C 15 62 10 40 20 38 C 24 38 24 48 30 54"
+            d="M 32 60 C 14 62 10 40 20 38 C 24 38 24 48 30 54"
             fill="none"
             stroke={strokeColor}
             strokeWidth={strokeW}
@@ -421,8 +421,8 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
           {/* Belly */}
           <ellipse cx="50" cy="56" rx="10" ry="12" fill={isColoring ? '#ffffff' : '#fed7aa'} stroke={strokeColor} strokeWidth="1.5" />
           {/* 2 Raised Arms */}
-          <path d="M 36 48 C 28 42 26 34 30 30" fill="none" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" />
-          <path d="M 64 48 C 72 42 74 34 70 30" fill="none" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" />
+          <path d="M 36 48 C 26 42 24 34 28 30" fill="none" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" />
+          <path d="M 64 48 C 74 42 76 34 72 30" fill="none" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" />
           {/* Ears */}
           <circle cx="34" cy="30" r="6" fill={isColoring ? '#ffffff' : '#78350f'} stroke={strokeColor} strokeWidth={strokeW} />
           <circle cx="34" cy="30" r="3" fill={isColoring ? '#ffffff' : '#fed7aa'} />
@@ -439,16 +439,16 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
         </svg>
       );
 
-    case 'flamingo': // פלמינגו - 2 very long legs
+    case 'flamingo': // פלמינגו - 2 very long slender legs
       return (
         <svg {...commonSvgProps}>
           {/* 2 Long Stilt Legs */}
-          <path d="M 46 58 L 44 90 M 40 90 L 48 90" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
-          <path d="M 56 58 L 56 90 M 52 90 L 60 90" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
-          {/* Feathered Body */}
+          <path d="M 46 58 L 44 90 M 38 90 L 48 90" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
+          <path d="M 56 58 L 56 90 M 50 90 L 60 90" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
+          {/* Body */}
           <ellipse cx="50" cy="48" rx="18" ry="14" fill={isColoring ? '#ffffff' : '#f472b6'} stroke={strokeColor} strokeWidth={strokeW} />
           <path d="M 42 42 C 48 40 54 48 46 54 Z" fill={isColoring ? '#ffffff' : '#ec4899'} stroke={strokeColor} strokeWidth="1.5" />
-          {/* S-Shaped Long Neck */}
+          {/* S-Shaped Neck */}
           <path
             d="M 58 46 C 70 38 72 20 62 18 C 56 16 54 24 64 24"
             fill="none"
@@ -463,7 +463,7 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
             strokeWidth={strokeW}
             strokeLinecap="round"
           />
-          {/* Head & Downward Curved Beak */}
+          {/* Head & Beak */}
           <circle cx="62" cy="18" r="7" fill={isColoring ? '#ffffff' : '#f472b6'} stroke={strokeColor} strokeWidth={strokeW} />
           <path d="M 66 18 C 76 22 74 30 70 30" fill={isColoring ? '#ffffff' : '#0f172a'} stroke={strokeColor} strokeWidth={strokeW} />
           <circle cx="62" cy="16" r="1.5" fill={strokeColor} />
@@ -474,8 +474,8 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
       return (
         <svg {...commonSvgProps}>
           {/* 2 Strong Legs */}
-          <path d="M 45 60 L 42 88 M 36 88 L 46 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
-          <path d="M 57 60 L 59 88 M 53 88 L 63 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
+          <path d="M 45 60 L 42 88 M 35 88 L 47 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
+          <path d="M 57 60 L 59 88 M 52 88 L 64 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
           {/* Fluffy Body */}
           <ellipse cx="50" cy="48" rx="20" ry="16" fill={isColoring ? '#ffffff' : '#334155'} stroke={strokeColor} strokeWidth={strokeW} />
           <ellipse cx="34" cy="48" rx="6" ry="6" fill={isColoring ? '#ffffff' : '#f8fafc'} stroke={strokeColor} strokeWidth={strokeW} />
@@ -490,19 +490,17 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
       );
 
     // ==========================================
-    // 4 LEGS (הולכים על ארבע)
+    // 4 LEGS (הולכים על ארבע 🐾)
     // ==========================================
 
-    case 'dog': // כלב - 4 visible legs, wagging tail
+    case 'dog': // כלב - 4 visible legs with paws
       return (
         <svg {...commonSvgProps}>
           {/* 4 Standing Legs */}
-          {/* Back left & right legs */}
-          <rect x="26" y="58" width="7" height="28" rx="3.5" fill={isColoring ? '#ffffff' : '#b45309'} stroke={strokeColor} strokeWidth={strokeW} />
-          <rect x="36" y="58" width="7" height="28" rx="3.5" fill={isColoring ? '#ffffff' : '#d97706'} stroke={strokeColor} strokeWidth={strokeW} />
-          {/* Front left & right legs */}
-          <rect x="58" y="58" width="7" height="28" rx="3.5" fill={isColoring ? '#ffffff' : '#b45309'} stroke={strokeColor} strokeWidth={strokeW} />
-          <rect x="68" y="58" width="7" height="28" rx="3.5" fill={isColoring ? '#ffffff' : '#d97706'} stroke={strokeColor} strokeWidth={strokeW} />
+          <rect x="25" y="58" width="8" height="28" rx="4" fill={isColoring ? '#ffffff' : '#b45309'} stroke={strokeColor} strokeWidth={strokeW} />
+          <rect x="36" y="58" width="8" height="28" rx="4" fill={isColoring ? '#ffffff' : '#d97706'} stroke={strokeColor} strokeWidth={strokeW} />
+          <rect x="58" y="58" width="8" height="28" rx="4" fill={isColoring ? '#ffffff' : '#b45309'} stroke={strokeColor} strokeWidth={strokeW} />
+          <rect x="69" y="58" width="8" height="28" rx="4" fill={isColoring ? '#ffffff' : '#d97706'} stroke={strokeColor} strokeWidth={strokeW} />
           {/* Wagging Tail */}
           <path d="M 24 50 C 14 42 12 28 20 28" fill="none" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" />
           {/* Body */}
@@ -524,11 +522,11 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
       return (
         <svg {...commonSvgProps}>
           {/* 4 Standing Legs */}
-          <rect x="25" y="60" width="7" height="26" rx="3.5" fill={isColoring ? '#ffffff' : '#94a3b8'} stroke={strokeColor} strokeWidth={strokeW} />
-          <rect x="35" y="60" width="7" height="26" rx="3.5" fill={isColoring ? '#ffffff' : '#cbd5e1'} stroke={strokeColor} strokeWidth={strokeW} />
+          <rect x="24" y="60" width="7" height="26" rx="3.5" fill={isColoring ? '#ffffff' : '#94a3b8'} stroke={strokeColor} strokeWidth={strokeW} />
+          <rect x="34" y="60" width="7" height="26" rx="3.5" fill={isColoring ? '#ffffff' : '#cbd5e1'} stroke={strokeColor} strokeWidth={strokeW} />
           <rect x="58" y="60" width="7" height="26" rx="3.5" fill={isColoring ? '#ffffff' : '#94a3b8'} stroke={strokeColor} strokeWidth={strokeW} />
           <rect x="68" y="60" width="7" height="26" rx="3.5" fill={isColoring ? '#ffffff' : '#cbd5e1'} stroke={strokeColor} strokeWidth={strokeW} />
-          {/* Graceful Tail */}
+          {/* Tail */}
           <path d="M 22 56 C 12 50 14 30 22 30" fill="none" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" />
           {/* Body */}
           <ellipse cx="48" cy="54" rx="24" ry="14" fill={isColoring ? '#ffffff' : '#cbd5e1'} stroke={strokeColor} strokeWidth={strokeW} />
@@ -561,7 +559,6 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
           <rect x="69" y="80" width="8" height="6" fill={isColoring ? '#ffffff' : '#334155'} />
           {/* Body */}
           <rect x="26" y="44" width="50" height="26" rx="10" fill={isColoring ? '#ffffff' : '#f8fafc'} stroke={strokeColor} strokeWidth={strokeW} />
-          {/* Black spots on body */}
           {!isColoring && (
             <>
               <path d="M 36 44 C 42 48 40 56 32 54 Z" fill="#1e293b" />
@@ -630,7 +627,7 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
         </svg>
       );
 
-    case 'elephant': // פיל - 4 giant legs, trunk, big ears
+    case 'elephant': // פיל - 4 giant pillar legs, trunk, big ears
       return (
         <svg {...commonSvgProps}>
           {/* 4 Big Pillar Legs */}
@@ -638,6 +635,11 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
           <rect x="34" y="58" width="10" height="28" rx="3" fill={isColoring ? '#ffffff' : '#94a3b8'} stroke={strokeColor} strokeWidth={strokeW} />
           <rect x="58" y="58" width="10" height="28" rx="3" fill={isColoring ? '#ffffff' : '#64748b'} stroke={strokeColor} strokeWidth={strokeW} />
           <rect x="70" y="58" width="10" height="28" rx="3" fill={isColoring ? '#ffffff' : '#94a3b8'} stroke={strokeColor} strokeWidth={strokeW} />
+          {/* Toenails */}
+          <ellipse cx="27" cy="85" rx="3" ry="1.5" fill="#f8fafc" />
+          <ellipse cx="39" cy="85" rx="3" ry="1.5" fill="#f8fafc" />
+          <ellipse cx="63" cy="85" rx="3" ry="1.5" fill="#f8fafc" />
+          <ellipse cx="75" cy="85" rx="3" ry="1.5" fill="#f8fafc" />
           {/* Little Tail */}
           <path d="M 20 54 L 14 66" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" />
           {/* Big Round Body */}
@@ -750,29 +752,30 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
         </svg>
       );
 
-    case 'turtle': // צב - 4 crawling legs, rounded shell
+    case 'turtle': // צב - 4 crawling legs clearly visible, rounded shell
       return (
         <svg {...commonSvgProps}>
-          {/* 4 Crawling Legs */}
-          <ellipse cx="28" cy="68" rx="6" ry="10" fill={isColoring ? '#ffffff' : '#15803d'} stroke={strokeColor} strokeWidth={strokeW} transform="rotate(-20 28 68)" />
-          <ellipse cx="40" cy="72" rx="6" ry="10" fill={isColoring ? '#ffffff' : '#22c55e'} stroke={strokeColor} strokeWidth={strokeW} transform="rotate(-10 40 72)" />
-          <ellipse cx="60" cy="72" rx="6" ry="10" fill={isColoring ? '#ffffff' : '#15803d'} stroke={strokeColor} strokeWidth={strokeW} transform="rotate(10 60 72)" />
-          <ellipse cx="72" cy="68" rx="6" ry="10" fill={isColoring ? '#ffffff' : '#22c55e'} stroke={strokeColor} strokeWidth={strokeW} transform="rotate(20 72 68)" />
+          {/* 4 Crawling Legs protruding clearly around the shell */}
+          <ellipse cx="26" cy="68" rx="7" ry="11" fill={isColoring ? '#ffffff' : '#15803d'} stroke={strokeColor} strokeWidth={strokeW} transform="rotate(-25 26 68)" />
+          <ellipse cx="40" cy="74" rx="7" ry="11" fill={isColoring ? '#ffffff' : '#22c55e'} stroke={strokeColor} strokeWidth={strokeW} transform="rotate(-10 40 74)" />
+          <ellipse cx="60" cy="74" rx="7" ry="11" fill={isColoring ? '#ffffff' : '#15803d'} stroke={strokeColor} strokeWidth={strokeW} transform="rotate(10 60 74)" />
+          <ellipse cx="74" cy="68" rx="7" ry="11" fill={isColoring ? '#ffffff' : '#22c55e'} stroke={strokeColor} strokeWidth={strokeW} transform="rotate(25 74 68)" />
           {/* Tail */}
-          <polygon points="20,56 12,58 20,62" fill={isColoring ? '#ffffff' : '#22c55e'} stroke={strokeColor} strokeWidth="1.5" />
+          <polygon points="18,56 10,58 18,62" fill={isColoring ? '#ffffff' : '#22c55e'} stroke={strokeColor} strokeWidth="1.5" />
           {/* Shell */}
           <path
-            d="M 22 62 C 22 36 78 36 78 62 Z"
+            d="M 22 62 C 22 34 78 34 78 62 Z"
             fill={isColoring ? '#ffffff' : '#854d0e'}
             stroke={strokeColor}
             strokeWidth={strokeW}
           />
-          {/* Shell Patterns */}
+          {/* Shell Pattern */}
           <path d="M 38 62 C 38 46 62 46 62 62 M 50 46 L 50 62" stroke={strokeColor} strokeWidth="2" fill="none" />
-          {/* Head */}
-          <ellipse cx="84" cy="54" rx="10" ry="7" fill={isColoring ? '#ffffff' : '#22c55e'} stroke={strokeColor} strokeWidth={strokeW} />
-          {/* Eye */}
-          <circle cx="86" cy="52" r="2" fill={strokeColor} />
+          {/* Head with friendly face */}
+          <ellipse cx="85" cy="52" rx="10" ry="8" fill={isColoring ? '#ffffff' : '#22c55e'} stroke={strokeColor} strokeWidth={strokeW} />
+          <circle cx="87" cy="50" r="2" fill={strokeColor} />
+          <circle cx="88" cy="49" r="0.6" fill="#ffffff" />
+          <path d="M 88 55 Q 85 57 82 55" stroke={strokeColor} strokeWidth="1.5" strokeLinecap="round" fill="none" />
         </svg>
       );
 
@@ -801,8 +804,8 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
       return (
         <svg {...commonSvgProps}>
           {/* 4 Paws */}
-          <rect x="25" y="62" width="7" height="24" rx="3.5" fill={isColoring ? '#ffffff' : '#cbd5e1'} stroke={strokeColor} strokeWidth={strokeW} />
-          <rect x="35" y="62" width="7" height="24" rx="3.5" fill={isColoring ? '#ffffff' : '#e2e8f0'} stroke={strokeColor} strokeWidth={strokeW} />
+          <rect x="24" y="62" width="7" height="24" rx="3.5" fill={isColoring ? '#ffffff' : '#cbd5e1'} stroke={strokeColor} strokeWidth={strokeW} />
+          <rect x="34" y="62" width="7" height="24" rx="3.5" fill={isColoring ? '#ffffff' : '#e2e8f0'} stroke={strokeColor} strokeWidth={strokeW} />
           <rect x="58" y="62" width="7" height="24" rx="3.5" fill={isColoring ? '#ffffff' : '#cbd5e1'} stroke={strokeColor} strokeWidth={strokeW} />
           <rect x="68" y="62" width="7" height="24" rx="3.5" fill={isColoring ? '#ffffff' : '#e2e8f0'} stroke={strokeColor} strokeWidth={strokeW} />
           {/* Fluffy tail */}

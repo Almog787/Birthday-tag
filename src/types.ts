@@ -99,5 +99,8 @@ export interface AnimalItem {
 export type AnimalWorksheetTemplate = 'cut_and_paste' | 'line_matching';
 export type AnimalWorksheetColorMode = 'color' | 'coloring_book';
 export type AnimalWorksheetBorder = 'kindergarten' | 'dots' | 'double' | 'clean';
+export type AnimalPageLayoutMode = 'combined' | 'separated';
+export type AnimalCardsSize = 'medium' | 'large';
 export type MainViewType = 'tags' | 'tables' | 'animal_sorting';
+
 
