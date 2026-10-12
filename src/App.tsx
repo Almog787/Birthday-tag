@@ -80,10 +80,10 @@ export default function App() {
   // Main View Switcher: 'tags' (Birthday Tags) vs 'tables' (Kindergarten Tracking Tables) vs 'animal_sorting' (Animal sorting worksheet)
   const [mainView, setMainView] = useState<MainViewType>('tags');
 
-  // Tags State with localStorage persistence
+  // Tags State with localStorage persistence (v3 reflects updated children roster)
   const [tags, setTags] = useState<TagItem[]>(() => {
     try {
-      const saved = localStorage.getItem('birthday_tags_list_v2');
+      const saved = localStorage.getItem('birthday_tags_list_v3');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -96,7 +96,7 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('birthday_tags_list_v2', JSON.stringify(tags));
+      localStorage.setItem('birthday_tags_list_v3', JSON.stringify(tags));
     } catch (e) {
       console.warn('Failed to save tags to localStorage', e);
     }
@@ -180,9 +180,9 @@ export default function App() {
     setTags(tags.map((t) => (t.id === id ? { ...t, name, date } : t)));
   };
 
-  // Reset to original 29 tags
+  // Reset to original 27 tags
   const handleResetToOriginal = () => {
-    if (window.confirm('האם לשחזר את הרשימה המקורית של 29 הילדים?')) {
+    if (window.confirm('האם לשחזר את הרשימה המקורית של 27 הילדים?')) {
       trackResetChildren();
       setTags(INITIAL_TAGS);
     }
