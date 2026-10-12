@@ -104,7 +104,8 @@ export type AnimalPageLayoutMode = 'combined' | 'separated';
 export type AnimalCardsSize = 'medium' | 'large';
 
 // Magnetic Kit Specific Types
-export type AnimalCardsPerSheet = 4 | 6; // 4 = extra large (9.5-10cm) 2x2, 6 = medium-large (8cm) 2x3
+export type AnimalCardsPerSheet = 1 | 2 | 4 | 6 | 8 | 9; // 1 = full A4 poster, 2 = half-page (1x2), 4 = large (2x2), 6 = medium (2x3), 8 = compact (2x4), 9 = mini (3x3)
+export type AnimalImageScale = 'fill' | 'large' | 'medium' | 'contained'; // 'fill' = fills card maximally, 'large' = 85%, 'medium' = 70%, 'contained' = with padding
 export type AnimalCardBgStyle = 'clean_white' | 'pastel_tint' | 'vibrant_border';
 export type AnimalCutLinesStyle = 'dashed' | 'crop_marks' | 'solid';
 

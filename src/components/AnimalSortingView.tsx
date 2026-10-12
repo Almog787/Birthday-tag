@@ -27,6 +27,7 @@ import {
   Volume2
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
+import { toJpeg, toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
 import confetti from 'canvas-confetti';
 
@@ -34,6 +35,7 @@ import {
   AnimalItem,
   AnimalWorksheetColorMode,
   AnimalCardsPerSheet,
+  AnimalImageScale,
   AnimalCardBgStyle,
   AnimalCutLinesStyle
 } from '../types';
@@ -104,8 +106,9 @@ interface AnimalSortingViewProps {
 }
 
 export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
-  // 1. Core Magnetic Kit Options
-  const [cardsPerSheet, setCardsPerSheet] = useState<AnimalCardsPerSheet>(4); // 4 = Extra Large 2x2, 6 = Medium-Large 2x3
+  const [cardsPerSheet, setCardsPerSheet] = useState<AnimalCardsPerSheet>(4); // 1 = A4 poster, 2 = half-page (1x2), 4 = 2x2, 6 = 2x3, 8 = 2x4, 9 = 3x3
+  const [imageScale, setImageScale] = useState<AnimalImageScale>('fill'); // Default: fills card maximally
+  const [imageZoomPercent, setImageZoomPercent] = useState<number>(100); // 100% default
   const [selectedAnimalIds, setSelectedAnimalIds] = useState<string[]>(DEFAULT_SELECTED_ANIMAL_IDS);
   const [colorMode, setColorMode] = useState<AnimalWorksheetColorMode>('color');
   const [cardBgStyle, setCardBgStyle] = useState<AnimalCardBgStyle>('clean_white');
@@ -299,7 +302,7 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
     }, 150);
   };
 
-  // High-Resolution PDF Download
+  // High-Resolution PDF Download with multi-tiered fallback (toJpeg -> toPng -> html2canvas)
   const handleDownloadPDF = async (target: 'all' | 'headers' | 'cards') => {
     setIsExporting(true);
     setExportError(null);
@@ -311,47 +314,118 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
       const pdf = new jsPDF('portrait', 'mm', 'a4');
       let pageIndex = 0;
 
+      // Helper function to capture an A4 element reliably
+      const captureElement = async (el: HTMLElement, label: string): Promise<string> => {
+        setExportProgress(`מעבד ${label}...`);
+        
+        // Save inline styles
+        const origTransform = el.style.transform;
+        const origMargin = el.style.margin;
+        const origBoxShadow = el.style.boxShadow;
+        
+        try {
+          el.style.transform = 'none';
+          el.style.margin = '0';
+          el.style.boxShadow = 'none';
+          
+          await new Promise((r) => setTimeout(r, 80));
+
+          // Tier 1: toJpeg
+          try {
+            return await toJpeg(el, {
+              quality: 0.95,
+              pixelRatio: 2,
+              backgroundColor: '#ffffff',
+              cacheBust: true,
+              filter: (node) => !(node instanceof HTMLElement && node.classList.contains('no-print'))
+            });
+          } catch (jpegErr) {
+            console.warn('toJpeg failed, attempting toPng:', jpegErr);
+            // Tier 2: toPng
+            try {
+              return await toPng(el, {
+                pixelRatio: 1.5,
+                backgroundColor: '#ffffff',
+                filter: (node) => !(node instanceof HTMLElement && node.classList.contains('no-print'))
+              });
+            } catch (pngErr) {
+              console.warn('toPng failed, attempting html2canvas:', pngErr);
+              // Tier 3: html2canvas
+              const canvas = await html2canvas(el, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                logging: false,
+                ignoreElements: (node) => node.classList.contains('no-print')
+              });
+              return canvas.toDataURL('image/jpeg', 0.95);
+            }
+          }
+        } finally {
+          el.style.transform = origTransform;
+          el.style.margin = origMargin;
+          el.style.boxShadow = origBoxShadow;
+        }
+      };
+
       // 1. Export Headers Sheet if requested
       if ((target === 'all' || target === 'headers') && headersSheetRef.current) {
-        setExportProgress('מעבד את שלטי הכותרת ללוח המגנטי...');
-        const canvas = await html2canvas(headersSheetRef.current, {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: '#ffffff'
-        });
-        const imgData = canvas.toDataURL('image/jpeg', 0.95);
-        pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-        pageIndex++;
+        const imgData = await captureElement(headersSheetRef.current, 'שלטי כותרת לראש הלוח');
+        if (imgData) {
+          const format = imgData.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+          pdf.addImage(imgData, format, 0, 0, 210, 297, undefined, 'FAST');
+          pageIndex++;
+        }
       }
 
       // 2. Export Cards Sheets if requested
       if ((target === 'all' || target === 'cards') && cardsPagesContainerRef.current) {
         const pageElements = cardsPagesContainerRef.current.querySelectorAll('.animal-card-page-element');
         for (let i = 0; i < pageElements.length; i++) {
-          setExportProgress(`מעבד דף כרטיסיות ${i + 1} מתוך ${pageElements.length}...`);
-          if (pageIndex > 0) {
-            pdf.addPage('a4', 'portrait');
+          const imgData = await captureElement(
+            pageElements[i] as HTMLElement,
+            `דף כרטיסיות ${i + 1} מתוך ${pageElements.length}`
+          );
+          if (imgData) {
+            if (pageIndex > 0) {
+              pdf.addPage('a4', 'portrait');
+            }
+            const format = imgData.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+            pdf.addImage(imgData, format, 0, 0, 210, 297, undefined, 'FAST');
+            pageIndex++;
           }
-          const canvas = await html2canvas(pageElements[i] as HTMLElement, {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            backgroundColor: '#ffffff'
-          });
-          const imgData = canvas.toDataURL('image/jpeg', 0.95);
-          pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-          pageIndex++;
         }
       }
 
-      setExportProgress('שומר את קובץ ה-PDF...');
-      pdf.save(`animal-magnetic-sorting-kit-${target}.pdf`);
+      if (pageIndex === 0) {
+        throw new Error('לא נמצאו דפים לייצוא');
+      }
+
+      setExportProgress('שומר ומוריד קובץ PDF...');
+      const fileName = `ערכת_מיון_חיות_${cardsPerSheet}_בדף_${target}.pdf`;
+
+      try {
+        pdf.save(fileName);
+      } catch (saveErr) {
+        console.warn('pdf.save failed, using blob fallback:', saveErr);
+        const blob = pdf.output('blob');
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 1500);
+      }
+
       setExportSuccess(true);
       setTimeout(() => setExportSuccess(false), 5000);
-    } catch (err) {
+    } catch (err: any) {
       console.error('PDF Generation Error:', err);
-      setExportError('אירעה שגיאה ביצירת קובץ ה-PDF. ניתן להשתמש בכפתור ההדפסה הישירה של הדפדפן.');
+      setExportError(err?.message || 'אירעה שגיאה ביצירת קובץ ה-PDF. ניתן להשתמש בכפתור ההדפסה הישירה.');
     } finally {
       setIsExporting(false);
       setExportProgress('');
@@ -616,63 +690,249 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
             LEFT/RIGHT SIDEBAR: CUSTOMIZATION & ANIMAL SELECTION (lg:col-span-4)
         ===================================================================== */}
         <aside className="no-print lg:col-span-4 space-y-5">
-          {/* 1. Card Size Selector (4 vs 6 per page) */}
+          {/* 1. Card Layout & Page Capacity Selector */}
           <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs font-black text-slate-800 flex items-center gap-1.5">
                 <Grid2X2 className="w-4 h-4 text-rose-500" />
-                <span>גודל כרטיסיות להדפסה (בדף A4)</span>
+                <span>כמות כרטיסיות בדף A4 (קובע את גודל הכרטיסיה)</span>
               </label>
+              <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                {cardsPerSheet === 1
+                  ? 'פוסטר A4 מלא'
+                  : cardsPerSheet === 2
+                  ? 'חצי דף (1x2)'
+                  : cardsPerSheet === 4
+                  ? 'גדול (2x2)'
+                  : cardsPerSheet === 6
+                  ? 'בינוני (2x3)'
+                  : cardsPerSheet === 8
+                  ? 'קומפקטי (2x4)'
+                  : 'מיני (3x3)'}
+              </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
+              {/* Option: 1 Card per page (Maximum A4 fill) */}
+              <button
+                type="button"
+                onClick={() => {
+                  trackAnimalCardsPerSheetChange(1);
+                  setCardsPerSheet(1);
+                }}
+                className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center justify-between ${
+                  cardsPerSheet === 1
+                    ? 'border-rose-500 bg-rose-50/70 text-rose-950 font-bold shadow-xs ring-2 ring-rose-400/20'
+                    : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
+                }`}
+              >
+                <span className="text-lg mb-0.5">🖼️</span>
+                <span className="text-xs font-black">1 בדף (ענק)</span>
+                <span className="text-[10px] text-rose-700 font-bold mt-1 bg-rose-100/80 px-1 rounded">
+                  מקסימום A4
+                </span>
+              </button>
+
+              {/* Option: 2 Cards per page */}
+              <button
+                type="button"
+                onClick={() => {
+                  trackAnimalCardsPerSheetChange(2);
+                  setCardsPerSheet(2);
+                }}
+                className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center justify-between ${
+                  cardsPerSheet === 2
+                    ? 'border-rose-500 bg-rose-50/70 text-rose-950 font-bold shadow-xs ring-2 ring-rose-400/20'
+                    : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
+                }`}
+              >
+                <span className="text-lg mb-0.5">📑</span>
+                <span className="text-xs font-black">2 בדף</span>
+                <span className="text-[10px] text-slate-500 mt-1">חצי דף</span>
+              </button>
+
+              {/* Option: 4 Cards per page (Recommended) */}
               <button
                 type="button"
                 onClick={() => {
                   trackAnimalCardsPerSheetChange(4);
                   setCardsPerSheet(4);
                 }}
-                className={`p-3 rounded-xl border text-right transition-all flex flex-col justify-between ${
+                className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center justify-between ${
                   cardsPerSheet === 4
                     ? 'border-rose-500 bg-rose-50/70 text-rose-950 font-bold shadow-xs ring-2 ring-rose-400/20'
                     : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
                 }`}
               >
-                <div className="flex items-center justify-between w-full mb-1">
-                  <span className="text-sm font-black">גדול מאוד (4 בדף)</span>
-                  {cardsPerSheet === 4 && <Check className="w-4 h-4 text-rose-600" />}
-                </div>
-                <p className="text-[11px] text-slate-500 leading-tight">
-                  כ-9.5 ס"מ. רשת 2x2 ענקית ובולטת מרחוק למפגש פרונטלי על הלוח!
-                </p>
-                <span className="mt-2 inline-block text-[10px] font-black bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded-md self-start">
+                <span className="text-lg mb-0.5">🎴</span>
+                <span className="text-xs font-black">4 בדף (2x2)</span>
+                <span className="text-[10px] text-rose-700 font-bold mt-1 bg-rose-100/80 px-1 rounded">
                   מומלץ לגן
                 </span>
               </button>
 
+              {/* Option: 6 Cards per page */}
               <button
                 type="button"
                 onClick={() => {
                   trackAnimalCardsPerSheetChange(6);
                   setCardsPerSheet(6);
                 }}
-                className={`p-3 rounded-xl border text-right transition-all flex flex-col justify-between ${
+                className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center justify-between ${
                   cardsPerSheet === 6
                     ? 'border-rose-500 bg-rose-50/70 text-rose-950 font-bold shadow-xs ring-2 ring-rose-400/20'
                     : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
                 }`}
               >
-                <div className="flex items-center justify-between w-full mb-1">
-                  <span className="text-sm font-black">בינוני (6 בדף)</span>
-                  {cardsPerSheet === 6 && <Check className="w-4 h-4 text-rose-600" />}
-                </div>
-                <p className="text-[11px] text-slate-500 leading-tight">
-                  כ-8 ס"מ. רשת 2x3. מומלץ לקבוצות קטנות או לוחות מגנטיים אישיים.
-                </p>
-                <span className="mt-2 inline-block text-[10px] font-black bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded-md self-start">
-                  חסכוני בדפים
-                </span>
+                <span className="text-lg mb-0.5">🃏</span>
+                <span className="text-xs font-black">6 בדף (2x3)</span>
+                <span className="text-[10px] text-slate-500 mt-1">בינוני</span>
               </button>
+
+              {/* Option: 8 Cards per page */}
+              <button
+                type="button"
+                onClick={() => {
+                  trackAnimalCardsPerSheetChange(8);
+                  setCardsPerSheet(8);
+                }}
+                className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center justify-between ${
+                  cardsPerSheet === 8
+                    ? 'border-rose-500 bg-rose-50/70 text-rose-950 font-bold shadow-xs ring-2 ring-rose-400/20'
+                    : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
+                }`}
+              >
+                <span className="text-lg mb-0.5">📇</span>
+                <span className="text-xs font-black">8 בדף (2x4)</span>
+                <span className="text-[10px] text-slate-500 mt-1">קומפקטי</span>
+              </button>
+
+              {/* Option: 9 Cards per page */}
+              <button
+                type="button"
+                onClick={() => {
+                  trackAnimalCardsPerSheetChange(9);
+                  setCardsPerSheet(9);
+                }}
+                className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center justify-between ${
+                  cardsPerSheet === 9
+                    ? 'border-rose-500 bg-rose-50/70 text-rose-950 font-bold shadow-xs ring-2 ring-rose-400/20'
+                    : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
+                }`}
+              >
+                <span className="text-lg mb-0.5">🀄</span>
+                <span className="text-xs font-black">9 בדף (3x3)</span>
+                <span className="text-[10px] text-slate-500 mt-1">מיני-קלפים</span>
+              </button>
+            </div>
+          </div>
+
+          {/* 1.5 Image Size Control inside Cards (שליטה בגודל התמונה בתוך הכרטיסיות) */}
+          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                <Sliders className="w-4 h-4 text-emerald-600" />
+                <span>גודל התמונה בתוך הכרטיסיה</span>
+              </label>
+              <span className="text-[10px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
+                {imageScale === 'fill' ? 'מילוי מקסימלי (ברירת מחדל)' : `${imageZoomPercent}%`}
+              </span>
+            </div>
+
+            {/* Scale Presets */}
+            <div className="grid grid-cols-4 gap-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  setImageScale('fill');
+                  setImageZoomPercent(100);
+                }}
+                className={`py-2 px-1 text-center rounded-xl border transition-all text-xs font-black ${
+                  imageScale === 'fill'
+                    ? 'border-emerald-500 bg-emerald-50 text-emerald-950 ring-2 ring-emerald-400/30'
+                    : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                <span>🌟 מלא</span>
+                <span className="block text-[9px] font-normal text-emerald-700">דיפולט</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setImageScale('large');
+                  setImageZoomPercent(88);
+                }}
+                className={`py-2 px-1 text-center rounded-xl border transition-all text-xs font-bold ${
+                  imageScale === 'large'
+                    ? 'border-emerald-500 bg-emerald-50 text-emerald-950 ring-2 ring-emerald-400/30'
+                    : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                <span>גדול</span>
+                <span className="block text-[9px] font-normal text-slate-500">88%</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setImageScale('medium');
+                  setImageZoomPercent(74);
+                }}
+                className={`py-2 px-1 text-center rounded-xl border transition-all text-xs font-bold ${
+                  imageScale === 'medium'
+                    ? 'border-emerald-500 bg-emerald-50 text-emerald-950 ring-2 ring-emerald-400/30'
+                    : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                <span>בינוני</span>
+                <span className="block text-[9px] font-normal text-slate-500">74%</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setImageScale('contained');
+                  setImageZoomPercent(60);
+                }}
+                className={`py-2 px-1 text-center rounded-xl border transition-all text-xs font-bold ${
+                  imageScale === 'contained'
+                    ? 'border-emerald-500 bg-emerald-50 text-emerald-950 ring-2 ring-emerald-400/30'
+                    : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                <span>מרווח</span>
+                <span className="block text-[9px] font-normal text-slate-500">60%</span>
+              </button>
+            </div>
+
+            {/* Fine-tuning Slider */}
+            <div className="pt-1 border-t border-slate-100">
+              <div className="flex items-center justify-between text-[11px] font-semibold text-slate-600 mb-1">
+                <span>זום עדין לתמונה:</span>
+                <span className="font-mono text-emerald-700 font-bold">{imageZoomPercent}%</span>
+              </div>
+              <input
+                type="range"
+                min="50"
+                max="125"
+                step="5"
+                value={imageZoomPercent}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  setImageZoomPercent(val);
+                  if (val === 100) setImageScale('fill');
+                  else if (val >= 85) setImageScale('large');
+                  else if (val >= 70) setImageScale('medium');
+                  else setImageScale('contained');
+                }}
+                className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+              />
+              <div className="flex justify-between text-[9px] text-slate-400 mt-1">
+                <span>50% קטן</span>
+                <span>100% מילוי מושלם</span>
+                <span>125% תקריב</span>
+              </div>
             </div>
           </div>
 
@@ -1448,7 +1708,17 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="bg-slate-100 text-slate-700 font-bold px-2 py-0.5 rounded-md">
-                            {cardsPerSheet === 4 ? 'גודל ענק (4 בדף)' : 'גודל בינוני (6 בדף)'}
+                            {cardsPerSheet === 1
+                              ? 'כרטיסיית ענק A4 (1 בדף)'
+                              : cardsPerSheet === 2
+                              ? 'גודל חצי דף (2 בדף)'
+                              : cardsPerSheet === 4
+                              ? 'גודל גדול (4 בדף)'
+                              : cardsPerSheet === 6
+                              ? 'גודל בינוני (6 בדף)'
+                              : cardsPerSheet === 8
+                              ? 'גודל קומפקטי (8 בדף)'
+                              : 'מיני קלפים (9 בדף)'}
                           </span>
                           <span>
                             דף כרטיסיות {pageIdx + 1} מתוך {cardPages.length}
@@ -1456,10 +1726,27 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
                         </div>
                       </div>
 
-                      {/* Cards Grid: 2x2 for 4 cards, or 2x3 for 6 cards */}
+                      {/* Dynamic Responsive Grid Layout based on cardsPerSheet:
+                          - 1: 1 col, 1 row (fills entire A4 page maximally!)
+                          - 2: 1 col, 2 rows (half A4 page each)
+                          - 4: 2 cols, 2 rows (large 2x2)
+                          - 6: 2 cols, 3 rows (medium 2x3)
+                          - 8: 2 cols, 4 rows (compact 2x4)
+                          - 9: 3 cols, 3 rows (mini 3x3)
+                      */}
                       <div
-                        className={`flex-1 grid gap-5 p-2 ${
-                          cardsPerSheet === 4 ? 'grid-cols-2 grid-rows-2' : 'grid-cols-2 grid-rows-3'
+                        className={`flex-1 grid p-1.5 ${
+                          cardsPerSheet === 1
+                            ? 'grid-cols-1 grid-rows-1 gap-0'
+                            : cardsPerSheet === 2
+                            ? 'grid-cols-1 grid-rows-2 gap-6'
+                            : cardsPerSheet === 4
+                            ? 'grid-cols-2 grid-rows-2 gap-5'
+                            : cardsPerSheet === 6
+                            ? 'grid-cols-2 grid-rows-3 gap-4'
+                            : cardsPerSheet === 8
+                            ? 'grid-cols-2 grid-rows-4 gap-3'
+                            : 'grid-cols-3 grid-rows-3 gap-2.5'
                         }`}
                       >
                         {pageAnimals.map((animal) => {
@@ -1468,7 +1755,17 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
                           return (
                             <div
                               key={animal.id}
-                              className={`relative rounded-3xl p-4 flex flex-col items-center justify-between shadow-xs transition-all overflow-hidden ${bgClass} ${
+                              className={`relative rounded-3xl flex flex-col items-center justify-between shadow-xs transition-all overflow-hidden ${bgClass} ${
+                                cardsPerSheet === 1
+                                  ? 'p-6 sm:p-8 h-full border-4 border-slate-300'
+                                  : cardsPerSheet === 2
+                                  ? 'p-5 sm:p-6 h-full'
+                                  : cardsPerSheet <= 4
+                                  ? 'p-4'
+                                  : cardsPerSheet <= 6
+                                  ? 'p-3'
+                                  : 'p-2'
+                              } ${
                                 cutLinesStyle === 'dashed'
                                   ? 'border-2 border-dashed border-slate-400'
                                   : cutLinesStyle === 'crop_marks'
@@ -1476,8 +1773,8 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
                                   : 'border-2 border-slate-400'
                               }`}
                             >
-                              {/* Scissor Cutting Icon in Top-Left Corner */}
-                              {cutLinesStyle === 'dashed' && (
+                              {/* Scissor Cutting Icon in Top-Left Corner (for multi-card layouts) */}
+                              {cutLinesStyle === 'dashed' && cardsPerSheet > 1 && (
                                 <div className="absolute top-2 left-2 text-slate-400 flex items-center gap-0.5 opacity-60">
                                   <Scissors className="w-3.5 h-3.5" />
                                 </div>
@@ -1503,42 +1800,81 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
 
                               {/* Optional Leg Count Hint in Top Corner */}
                               {showLegsHint && (
-                                <div className="absolute top-2.5 right-2.5 bg-slate-100 border border-slate-300 rounded-full px-2 py-0.5 text-[11px] font-black text-slate-700 flex items-center gap-1 shadow-2xs">
+                                <div className="absolute top-2.5 right-2.5 bg-slate-100 border border-slate-300 rounded-full px-2 py-0.5 text-[11px] font-black text-slate-700 flex items-center gap-1 shadow-2xs z-10">
                                   <span>{animal.legs === 2 ? '👣 2' : '🐾 4'}</span>
                                 </div>
                               )}
 
                               {/* Animal Sound Emoji Badge */}
                               {animal.soundEmoji && (
-                                <div className="absolute top-2.5 left-2.5 text-lg opacity-80">
+                                <div
+                                  className={`absolute top-2.5 left-2.5 opacity-85 z-10 ${
+                                    cardsPerSheet === 1 ? 'text-3xl' : cardsPerSheet === 2 ? 'text-2xl' : 'text-lg'
+                                  }`}
+                                >
                                   {animal.soundEmoji}
                                 </div>
                               )}
 
-                              {/* Centered Large SVG Animal Illustration with Distinct Legs */}
+                              {/* Centered Large Animal Illustration with Clean Aspect Ratio (Never Stretches!) */}
                               <div
-                                className={`w-full flex items-center justify-center my-auto ${
-                                  cardsPerSheet === 4 ? 'h-44 sm:h-48' : 'h-32 sm:h-36'
+                                className={`w-full flex items-center justify-center my-auto overflow-hidden ${
+                                  cardsPerSheet === 1
+                                    ? 'flex-1 h-full min-h-[460px] max-h-[580px]'
+                                    : cardsPerSheet === 2
+                                    ? 'flex-1 h-full min-h-[220px] max-h-[260px]'
+                                    : cardsPerSheet === 4
+                                    ? 'h-48 sm:h-52'
+                                    : cardsPerSheet === 6
+                                    ? 'h-32 sm:h-36'
+                                    : cardsPerSheet === 8
+                                    ? 'h-24 sm:h-28'
+                                    : 'h-20 sm:h-24'
                                 }`}
                               >
                                 <AnimalIllustration
                                   animalId={animal.id}
                                   mode={colorMode}
-                                 
+                                  imageScale={imageScale}
+                                  customZoom={imageZoomPercent}
                                   className="w-full h-full max-h-full object-contain filter drop-shadow-2xs"
                                 />
                               </div>
 
                               {/* Animal Name Tag (Large Vowel-Pointed Hebrew Text) */}
-                              <div className="w-full text-center mt-2 pt-2 border-t border-slate-200/80">
+                              <div
+                                className={`w-full text-center border-t border-slate-200/80 ${
+                                  cardsPerSheet === 1
+                                    ? 'mt-4 pt-4'
+                                    : cardsPerSheet === 2
+                                    ? 'mt-3 pt-2.5'
+                                    : cardsPerSheet <= 6
+                                    ? 'mt-2 pt-2'
+                                    : 'mt-1 pt-1'
+                                }`}
+                              >
                                 <h3
-                                  className={`font-black text-slate-900 tracking-tight ${
-                                    cardsPerSheet === 4 ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'
+                                  className={`font-black text-slate-900 tracking-tight leading-tight ${
+                                    cardsPerSheet === 1
+                                      ? 'text-4xl sm:text-5xl mb-1'
+                                      : cardsPerSheet === 2
+                                      ? 'text-3xl sm:text-4xl mb-0.5'
+                                      : cardsPerSheet === 4
+                                      ? 'text-2xl sm:text-3xl'
+                                      : cardsPerSheet === 6
+                                      ? 'text-xl sm:text-2xl'
+                                      : cardsPerSheet === 8
+                                      ? 'text-lg sm:text-xl'
+                                      : 'text-sm sm:text-base'
                                   }`}
                                 >
                                   {animal.nameNikud}
                                 </h3>
-                                <span className="text-[11px] font-semibold text-slate-500 block">
+                                <span
+                                  className={`font-semibold text-slate-500 block ${
+                                    cardsPerSheet <= 2 ? 'text-sm' : cardsPerSheet <= 6 ? 'text-[11px]' : 'text-[9px]'
+                                  }`}
+                                >
                                   {animal.categoryLabel}
                                 </span>
                               </div>
@@ -1550,7 +1886,7 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
                         {Array.from({ length: cardsPerSheet - pageAnimals.length }).map((_, emptyIdx) => (
                           <div
                             key={`empty-${emptyIdx}`}
-                            className="border-2 border-dashed border-slate-200 rounded-3xl p-4 flex flex-col items-center justify-center text-slate-300"
+                            className="border-2 border-dashed border-slate-200 rounded-3xl p-4 flex flex-col items-center justify-center text-slate-300 min-h-[120px]"
                           >
                             <span className="text-xs font-medium">כרטיסיה ריקה לגזירה</span>
                           </div>

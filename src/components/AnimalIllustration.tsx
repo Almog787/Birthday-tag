@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AnimalWorksheetColorMode } from '../types';
+import { AnimalWorksheetColorMode, AnimalImageScale } from '../types';
 import { ANIMALS_DATABASE } from '../data/animals';
 
 interface AnimalIllustrationProps {
@@ -7,19 +7,22 @@ interface AnimalIllustrationProps {
   mode?: AnimalWorksheetColorMode;
   className?: string;
   size?: number | string;
-  showTextInside?: boolean;
+  imageScale?: AnimalImageScale; // 'fill' (100% max), 'large' (88%), 'medium' (74%), 'contained' (60%)
+  customZoom?: number; // optional custom percentage 50% - 130%
 }
 
 /**
- * High-quality illustration component rendering the user's authentic cards (row-*-column-*.png)
+ * High-quality illustration component rendering the user's authentic cards (row-*-column-*.png).
  * Supports both color mode and coloring-book outline/grayscale mode.
- * Robust fallback hierarchy: Bundled ES asset -> Public path -> Emoji badge.
+ * Crucially maintains aspect-ratio (object-contain) so images NEVER stretch or distort.
  */
 export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
   animalId,
   mode = 'color',
   className = 'w-full h-full',
-  size
+  size,
+  imageScale = 'fill',
+  customZoom
 }) => {
   const isColoring = mode === 'coloring_book';
   const animal = ANIMALS_DATABASE.find((a) => a.id === animalId);
@@ -33,9 +36,34 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
         style={size ? { width: size, height: size } : undefined}
       >
         <span className="text-3xl">{animal?.soundEmoji || '🐾'}</span>
-        <span className="text-xs font-black text-amber-900 mt-1">{animal?.nameNikud || animal?.name || animalId}</span>
+        <span className="text-xs font-black text-amber-900 mt-1">
+          {animal?.nameNikud || animal?.name || animalId}
+        </span>
       </div>
     );
+  }
+
+  // Calculate zoom transform scale
+  let scalePercent = 100;
+  if (customZoom !== undefined) {
+    scalePercent = customZoom;
+  } else {
+    switch (imageScale) {
+      case 'fill':
+        scalePercent = 100; // Maximally fills container
+        break;
+      case 'large':
+        scalePercent = 88;
+        break;
+      case 'medium':
+        scalePercent = 74;
+        break;
+      case 'contained':
+        scalePercent = 60;
+        break;
+      default:
+        scalePercent = 100;
+    }
   }
 
   return (
@@ -47,7 +75,11 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
         src={animal.imagePath}
         alt={animal.name || animalId}
         onError={() => setHasError(true)}
-        className={`w-full h-full object-contain select-none transition-all duration-200 ${
+        style={{
+          transform: scalePercent !== 100 ? `scale(${scalePercent / 100})` : undefined,
+          transformOrigin: 'center center'
+        }}
+        className={`w-full h-full object-contain select-none transition-transform duration-200 pointer-events-none ${
           isColoring
             ? 'grayscale contrast-150 brightness-110 filter'
             : 'drop-shadow-2xs filter'
