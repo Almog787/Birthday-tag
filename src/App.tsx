@@ -528,9 +528,9 @@ export default function App() {
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <span>🐾</span>
-              <span>דף מיון חיות</span>
-              <span className="text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.2 rounded-full font-black">
+              <span>🧲</span>
+              <span>ערכת מיון חיות ללוח מגנטי</span>
+              <span className="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded-full font-black">
                 חדש
               </span>
             </button>

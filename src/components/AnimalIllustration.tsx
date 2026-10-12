@@ -335,6 +335,37 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
         </svg>
       );
 
+    case 'dove': // יונה - 2 distinct pink standing legs, soft white body, gentle wing, beak with olive twig
+      return (
+        <svg {...commonSvgProps}>
+          {/* 2 Standing Pink Legs */}
+          <path d="M 44 68 L 40 88 M 34 88 L 46 88 M 38 84 L 46 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
+          <path d="M 56 68 L 56 88 M 50 88 L 62 88 M 52 84 L 60 88" stroke={strokeColor} strokeWidth={strokeW} strokeLinecap="round" fill="none" />
+          {/* Tail Feathers */}
+          <polygon points="26,50 10,44 14,56 12,66 28,60" fill={isColoring ? '#ffffff' : '#f1f5f9'} stroke={strokeColor} strokeWidth={strokeW} />
+          {/* Body */}
+          <ellipse cx="50" cy="52" rx="22" ry="18" fill={isColoring ? '#ffffff' : '#f8fafc'} stroke={strokeColor} strokeWidth={strokeW} />
+          {/* Gentle Wing */}
+          <path
+            d="M 38 46 C 46 40 56 46 50 58 C 42 62 34 54 38 46 Z"
+            fill={isColoring ? '#ffffff' : '#e2e8f0'}
+            stroke={strokeColor}
+            strokeWidth={strokeW}
+          />
+          {/* Head */}
+          <circle cx="66" cy="38" r="12" fill={isColoring ? '#ffffff' : '#f8fafc'} stroke={strokeColor} strokeWidth={strokeW} />
+          {/* Beak */}
+          <polygon points="76,36 86,39 76,42" fill={isColoring ? '#ffffff' : '#fb923c'} stroke={strokeColor} strokeWidth="1.5" />
+          {/* Olive Leaf in Beak */}
+          {!isColoring && (
+            <path d="M 82 39 Q 88 34 92 36 Q 88 42 82 39 Z" fill="#22c55e" stroke={strokeColor} strokeWidth="1" />
+          )}
+          {/* Eye */}
+          <circle cx="68" cy="35" r="2.5" fill={strokeColor} />
+          <circle cx="69" cy="34" r="0.8" fill="#ffffff" />
+        </svg>
+      );
+
     case 'sparrow': // ציפור - 2 stick legs, perky beak
       return (
         <svg {...commonSvgProps}>

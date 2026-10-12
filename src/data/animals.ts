@@ -55,6 +55,16 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     soundEmoji: '🦉'
   },
   {
+    id: 'dove',
+    name: 'יונה',
+    nameNikud: 'יוֹנָה',
+    legs: 2,
+    category: 'birds',
+    categoryLabel: 'עופות',
+    description: 'עוף לבן ועדין עם 2 רגליים ורודות וענף זית במקור',
+    soundEmoji: '🕊️'
+  },
+  {
     id: 'sparrow',
     name: 'ציפור',
     nameNikud: 'צִפּוֹר',
@@ -230,14 +240,16 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
   }
 ];
 
-// Default selection: balanced 4 of 2-legs and 4 of 4-legs (8 total)
+// Default selection: balanced 5 of 2-legs and 5 of 4-legs (10 total)
 export const DEFAULT_SELECTED_ANIMAL_IDS: string[] = [
   'rooster',
   'duck',
   'penguin',
   'kangaroo',
+  'owl',
   'dog',
   'cat',
   'cow',
-  'elephant'
+  'elephant',
+  'lion'
 ];

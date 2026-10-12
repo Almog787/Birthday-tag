@@ -101,6 +101,12 @@ export type AnimalWorksheetColorMode = 'color' | 'coloring_book';
 export type AnimalWorksheetBorder = 'kindergarten' | 'dots' | 'double' | 'clean';
 export type AnimalPageLayoutMode = 'combined' | 'separated';
 export type AnimalCardsSize = 'medium' | 'large';
+
+// Magnetic Kit Specific Types
+export type AnimalCardsPerSheet = 4 | 6; // 4 = extra large (9.5-10cm) 2x2, 6 = medium-large (8cm) 2x3
+export type AnimalCardBgStyle = 'clean_white' | 'pastel_tint' | 'vibrant_border';
+export type AnimalCutLinesStyle = 'dashed' | 'crop_marks' | 'solid';
+
 export type MainViewType = 'tags' | 'tables' | 'animal_sorting';
 
 

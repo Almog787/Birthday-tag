@@ -320,3 +320,15 @@ export function trackAnimalPDFDownload(template: string, colorMode: string, coun
   });
 }
 
+export function trackAnimalCardsPerSheetChange(count: number): void {
+  trackEvent('animal_cards_per_sheet_change', {
+    cards_per_sheet: count
+  });
+}
+
+export function trackAnimalPrintTarget(target: 'headers' | 'cards' | 'all'): void {
+  trackEvent('animal_print_target', {
+    target
+  });
+}
+
