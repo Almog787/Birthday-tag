@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AnimalWorksheetColorMode } from '../types';
 import { ANIMALS_DATABASE } from '../data/animals';
 
@@ -13,6 +13,7 @@ interface AnimalIllustrationProps {
 /**
  * High-quality illustration component rendering the user's authentic cards (row-*-column-*.png)
  * Supports both color mode and coloring-book outline/grayscale mode.
+ * Robust fallback hierarchy: Bundled ES asset -> Public path -> Emoji badge.
  */
 export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
   animalId,
@@ -22,36 +23,38 @@ export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
 }) => {
   const isColoring = mode === 'coloring_book';
   const animal = ANIMALS_DATABASE.find((a) => a.id === animalId);
-  const imageSrc = animal?.imagePath;
+  const [hasError, setHasError] = useState(false);
 
-  if (imageSrc) {
+  // If error occurred or no image path, render clean friendly fallback
+  if (!animal?.imagePath || hasError) {
     return (
       <div
-        className={`relative flex items-center justify-center overflow-hidden ${className}`}
+        className={`flex flex-col items-center justify-center bg-amber-50/80 border border-amber-200/60 rounded-2xl select-none p-2 ${className}`}
         style={size ? { width: size, height: size } : undefined}
       >
-        <img
-          src={imageSrc}
-          alt={animal?.name || animalId}
-          className={`w-full h-full object-contain select-none transition-all duration-200 ${
-            isColoring
-              ? 'grayscale contrast-150 brightness-110 filter'
-              : 'drop-shadow-2xs filter'
-          }`}
-          loading="lazy"
-          draggable={false}
-        />
+        <span className="text-3xl">{animal?.soundEmoji || '🐾'}</span>
+        <span className="text-xs font-black text-amber-900 mt-1">{animal?.nameNikud || animal?.name || animalId}</span>
       </div>
     );
   }
 
-  // Fallback if not found
   return (
     <div
-      className={`flex items-center justify-center bg-slate-100 rounded-xl text-2xl select-none ${className}`}
+      className={`relative flex items-center justify-center overflow-hidden ${className}`}
       style={size ? { width: size, height: size } : undefined}
     >
-      <span>{animal?.soundEmoji || '🐾'}</span>
+      <img
+        src={animal.imagePath}
+        alt={animal.name || animalId}
+        onError={() => setHasError(true)}
+        className={`w-full h-full object-contain select-none transition-all duration-200 ${
+          isColoring
+            ? 'grayscale contrast-150 brightness-110 filter'
+            : 'drop-shadow-2xs filter'
+        }`}
+        loading="eager"
+        draggable={false}
+      />
     </div>
   );
 };

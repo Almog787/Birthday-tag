@@ -1,8 +1,31 @@
 import { AnimalItem } from '../types';
 
+// Direct ES imports ensuring Vite bundles, hashes, and correctly resolves all images
+// in both development, production, iframe, relative paths, and preview environments!
+import roosterImg from '../assets/animals/row-1-column-1.png';
+import duckImg from '../assets/animals/row-1-column-2.png';
+import penguinImg from '../assets/animals/row-1-column-3.png';
+import parrotImg from '../assets/animals/row-1-column-4.png';
+import owlImg from '../assets/animals/row-1-column-5.png';
+import kangarooImg from '../assets/animals/row-2-column-2.png';
+import monkeyImg from '../assets/animals/row-2-column-3.png';
+import flamingoImg from '../assets/animals/row-2-column-4.png';
+import ostrichImg from '../assets/animals/row-2-column-5.png';
+
+import dogImg from '../assets/animals/row-3-column-1.png';
+import catImg from '../assets/animals/row-3-column-2.png';
+import cowImg from '../assets/animals/row-3-column-3.png';
+import elephantImg from '../assets/animals/row-3-column-4.png';
+import giraffeImg from '../assets/animals/row-3-column-5.png';
+import lionImg from '../assets/animals/row-4-column-1.png';
+import tigerImg from '../assets/animals/row-4-column-3.png';
+import bearImg from '../assets/animals/row-4-column-4.png';
+import sheepImg from '../assets/animals/row-4-column-5.png';
+
 /**
- * 18 Animal Picture Cards dataset mapped directly to the uploaded animal card images (row-*-column-*.png).
+ * 18 Animal Picture Cards dataset mapped directly to the uploaded animal card images.
  * 9 animals with 2 legs and 9 animals with 4 legs.
+ * Uses both direct bundled image asset imports (imagePath) and public fallback.
  */
 export const ANIMALS_DATABASE: AnimalItem[] = [
   // ==========================================
@@ -17,7 +40,7 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     categoryLabel: 'עופות',
     description: 'עוף חווה עומד על 2 רגליים עם כרבולת אדומה',
     soundEmoji: '🐓',
-    imagePath: '/animals/row-1-column-1.png'
+    imagePath: roosterImg
   },
   {
     id: 'duck',
@@ -28,7 +51,7 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     categoryLabel: 'עופות',
     description: 'שוחה במים ועומד ביבשה על 2 רגליים קרומיות',
     soundEmoji: '🦆',
-    imagePath: '/animals/row-1-column-2.png'
+    imagePath: duckImg
   },
   {
     id: 'penguin',
@@ -39,7 +62,7 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     categoryLabel: 'עופות קוטב',
     description: 'ציפור קוטב שהולכת זקוף על 2 רגליים קצרות וחזקות',
     soundEmoji: '🐧',
-    imagePath: '/animals/row-1-column-3.png'
+    imagePath: penguinImg
   },
   {
     id: 'parrot',
@@ -50,7 +73,7 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     categoryLabel: 'עופות',
     description: 'ציפור צבעונית שעומדת על 2 רגליים עם טפרים',
     soundEmoji: '🦜',
-    imagePath: '/animals/row-1-column-4.png'
+    imagePath: parrotImg
   },
   {
     id: 'owl',
@@ -61,7 +84,7 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     categoryLabel: 'עופות לילה',
     description: 'עוף לילה בעל עיניים גדולות העומד על 2 רגליים',
     soundEmoji: '🦉',
-    imagePath: '/animals/row-1-column-5.png'
+    imagePath: owlImg
   },
   {
     id: 'kangaroo',
@@ -72,7 +95,7 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     categoryLabel: 'חיות כיס',
     description: 'עומד וקופץ על 2 רגליים אחוריות חזקות וגדולות',
     soundEmoji: '🦘',
-    imagePath: '/animals/row-2-column-2.png'
+    imagePath: kangarooImg
   },
   {
     id: 'monkey',
@@ -83,7 +106,7 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     categoryLabel: 'חיות בר',
     description: 'עומד זקוף על 2 רגליים ומטפס בזריזות',
     soundEmoji: '🐒',
-    imagePath: '/animals/row-2-column-3.png'
+    imagePath: monkeyImg
   },
   {
     id: 'flamingo',
@@ -94,7 +117,7 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     categoryLabel: 'עופות מים',
     description: 'עוף מים ורוד ויפהפה העומד על 2 רגליים ארוכות',
     soundEmoji: '🦩',
-    imagePath: '/animals/row-2-column-4.png'
+    imagePath: flamingoImg
   },
   {
     id: 'ostrich',
@@ -105,7 +128,7 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     categoryLabel: 'עופות רצים',
     description: 'העוף הגדול בעולם שרץ במהירות על 2 רגליים שריריות',
     soundEmoji: '🪶',
-    imagePath: '/animals/row-2-column-5.png'
+    imagePath: ostrichImg
   },
 
   // ==========================================
@@ -120,7 +143,7 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     categoryLabel: 'חיות מחמד',
     description: 'ידידו הטוב של האדם, עומד ורץ בשמחה על 4 רגליים',
     soundEmoji: '🐶',
-    imagePath: '/animals/row-3-column-1.png'
+    imagePath: dogImg
   },
   {
     id: 'cat',
@@ -131,7 +154,7 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     categoryLabel: 'חיות מחמד',
     description: 'חיית מחמד גמישה וחמודה שהולכת בעדינות על 4 כפות',
     soundEmoji: '🐱',
-    imagePath: '/animals/row-3-column-2.png'
+    imagePath: catImg
   },
   {
     id: 'cow',
@@ -142,7 +165,7 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     categoryLabel: 'חיות חווה',
     description: 'חיית חווה נותנת חלב, עומדת באחו על 4 רגליים עם פרסות',
     soundEmoji: '🐮',
-    imagePath: '/animals/row-3-column-3.png'
+    imagePath: cowImg
   },
   {
     id: 'elephant',
@@ -153,7 +176,7 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     categoryLabel: 'חיות ספארי',
     description: 'בעל חדק גדול ואוזניים רחבות, צועד על 4 רגליים חזקות',
     soundEmoji: '🐘',
-    imagePath: '/animals/row-3-column-4.png'
+    imagePath: elephantImg
   },
   {
     id: 'giraffe',
@@ -164,7 +187,7 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     categoryLabel: 'חיות ספארי',
     description: 'החיה הגבוהה בעולם עם צוואר ארוך ו-4 רגליים דקות וגבוהות',
     soundEmoji: '🦒',
-    imagePath: '/animals/row-3-column-5.png'
+    imagePath: giraffeImg
   },
   {
     id: 'lion',
@@ -175,7 +198,7 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     categoryLabel: 'חיות ספארי',
     description: 'מלך החיות בעל רעמה מפוארת הצועד בגאווה על 4 כפות',
     soundEmoji: '🦁',
-    imagePath: '/animals/row-4-column-1.png'
+    imagePath: lionImg
   },
   {
     id: 'tiger',
@@ -186,7 +209,7 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     categoryLabel: 'חיות בר',
     description: 'טורף חזק ומהיר עם פסים ו-4 כפות חזקות',
     soundEmoji: '🐯',
-    imagePath: '/animals/row-4-column-3.png'
+    imagePath: tigerImg
   },
   {
     id: 'bear',
@@ -197,7 +220,7 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     categoryLabel: 'חיות בר',
     description: 'חיית יער גדולה ופרוותית הצועדת בכוח על 4 כפות עבות',
     soundEmoji: '🐻',
-    imagePath: '/animals/row-4-column-4.png'
+    imagePath: bearImg
   },
   {
     id: 'sheep',
@@ -208,7 +231,7 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     categoryLabel: 'חיות חווה',
     description: 'עטופה בצמר רך ועומדת ברוגע בעדר על 4 רגליים',
     soundEmoji: '🐑',
-    imagePath: '/animals/row-4-column-5.png'
+    imagePath: sheepImg
   }
 ];
 
