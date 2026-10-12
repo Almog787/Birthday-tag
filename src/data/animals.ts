@@ -1,8 +1,12 @@
 import { AnimalItem } from '../types';
 
+/**
+ * 18 Animal Picture Cards dataset mapped directly to the uploaded animal card images (row-*-column-*.png).
+ * 9 animals with 2 legs and 9 animals with 4 legs.
+ */
 export const ANIMALS_DATABASE: AnimalItem[] = [
   // ==========================================
-  // קבוצה 1: הולכים על שתיים (2 רגליים)
+  // קבוצה 1: הולכים על שתיים (2 רגליים - 9 חיות)
   // ==========================================
   {
     id: 'rooster',
@@ -12,7 +16,8 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     category: 'birds',
     categoryLabel: 'עופות',
     description: 'עוף חווה עומד על 2 רגליים עם כרבולת אדומה',
-    soundEmoji: '🐓'
+    soundEmoji: '🐓',
+    imagePath: '/animals/row-1-column-1.png'
   },
   {
     id: 'duck',
@@ -22,7 +27,8 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     category: 'birds',
     categoryLabel: 'עופות',
     description: 'שוחה במים ועומד ביבשה על 2 רגליים קרומיות',
-    soundEmoji: '🦆'
+    soundEmoji: '🦆',
+    imagePath: '/animals/row-1-column-2.png'
   },
   {
     id: 'penguin',
@@ -32,7 +38,8 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     category: 'birds',
     categoryLabel: 'עופות קוטב',
     description: 'ציפור קוטב שהולכת זקוף על 2 רגליים קצרות וחזקות',
-    soundEmoji: '🐧'
+    soundEmoji: '🐧',
+    imagePath: '/animals/row-1-column-3.png'
   },
   {
     id: 'parrot',
@@ -42,7 +49,8 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     category: 'birds',
     categoryLabel: 'עופות',
     description: 'ציפור צבעונית שעומדת על 2 רגליים עם טפרים',
-    soundEmoji: '🦜'
+    soundEmoji: '🦜',
+    imagePath: '/animals/row-1-column-4.png'
   },
   {
     id: 'owl',
@@ -52,27 +60,8 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     category: 'birds',
     categoryLabel: 'עופות לילה',
     description: 'עוף לילה בעל עיניים גדולות העומד על 2 רגליים',
-    soundEmoji: '🦉'
-  },
-  {
-    id: 'dove',
-    name: 'יונה',
-    nameNikud: 'יוֹנָה',
-    legs: 2,
-    category: 'birds',
-    categoryLabel: 'עופות',
-    description: 'עוף לבן ועדין עם 2 רגליים ורודות וענף זית במקור',
-    soundEmoji: '🕊️'
-  },
-  {
-    id: 'sparrow',
-    name: 'ציפור',
-    nameNikud: 'צִפּוֹר',
-    legs: 2,
-    category: 'birds',
-    categoryLabel: 'עופות שיר',
-    description: 'ציפור שיר קטנה ומצייצת העומדת על 2 רגליים דקות',
-    soundEmoji: '🐦'
+    soundEmoji: '🦉',
+    imagePath: '/animals/row-1-column-5.png'
   },
   {
     id: 'kangaroo',
@@ -82,7 +71,8 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     category: 'wild',
     categoryLabel: 'חיות כיס',
     description: 'עומד וקופץ על 2 רגליים אחוריות חזקות וגדולות',
-    soundEmoji: '🦘'
+    soundEmoji: '🦘',
+    imagePath: '/animals/row-2-column-2.png'
   },
   {
     id: 'monkey',
@@ -92,7 +82,8 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     category: 'wild',
     categoryLabel: 'חיות בר',
     description: 'עומד זקוף על 2 רגליים ומטפס בזריזות',
-    soundEmoji: '🐒'
+    soundEmoji: '🐒',
+    imagePath: '/animals/row-2-column-3.png'
   },
   {
     id: 'flamingo',
@@ -102,7 +93,8 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     category: 'birds',
     categoryLabel: 'עופות מים',
     description: 'עוף מים ורוד ויפהפה העומד על 2 רגליים ארוכות',
-    soundEmoji: '🦩'
+    soundEmoji: '🦩',
+    imagePath: '/animals/row-2-column-4.png'
   },
   {
     id: 'ostrich',
@@ -112,11 +104,12 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     category: 'birds',
     categoryLabel: 'עופות רצים',
     description: 'העוף הגדול בעולם שרץ במהירות על 2 רגליים שריריות',
-    soundEmoji: '🪶'
+    soundEmoji: '🪶',
+    imagePath: '/animals/row-2-column-5.png'
   },
 
   // ==========================================
-  // קבוצה 2: הולכים על ארבע (4 רגליים)
+  // קבוצה 2: הולכים על ארבע (4 רגליים - 9 חיות)
   // ==========================================
   {
     id: 'dog',
@@ -126,7 +119,8 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     category: 'pets',
     categoryLabel: 'חיות מחמד',
     description: 'ידידו הטוב של האדם, עומד ורץ בשמחה על 4 רגליים',
-    soundEmoji: '🐶'
+    soundEmoji: '🐶',
+    imagePath: '/animals/row-3-column-1.png'
   },
   {
     id: 'cat',
@@ -136,7 +130,8 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     category: 'pets',
     categoryLabel: 'חיות מחמד',
     description: 'חיית מחמד גמישה וחמודה שהולכת בעדינות על 4 כפות',
-    soundEmoji: '🐱'
+    soundEmoji: '🐱',
+    imagePath: '/animals/row-3-column-2.png'
   },
   {
     id: 'cow',
@@ -146,27 +141,8 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     category: 'farm',
     categoryLabel: 'חיות חווה',
     description: 'חיית חווה נותנת חלב, עומדת באחו על 4 רגליים עם פרסות',
-    soundEmoji: '🐮'
-  },
-  {
-    id: 'horse',
-    name: 'סוס',
-    nameNikud: 'סוּס',
-    legs: 4,
-    category: 'farm',
-    categoryLabel: 'חיות חווה',
-    description: 'חיה אצילית ומהירה הדוהרת בעוצמה על 4 רגליים',
-    soundEmoji: '🐴'
-  },
-  {
-    id: 'sheep',
-    name: 'כבשה',
-    nameNikud: 'כִּבְשָׂה',
-    legs: 4,
-    category: 'farm',
-    categoryLabel: 'חיות חווה',
-    description: 'עטופה בצמר רך ועומדת ברוגע בעדר על 4 רגליים',
-    soundEmoji: '🐑'
+    soundEmoji: '🐮',
+    imagePath: '/animals/row-3-column-3.png'
   },
   {
     id: 'elephant',
@@ -176,7 +152,8 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     category: 'wild',
     categoryLabel: 'חיות ספארי',
     description: 'בעל חדק גדול ואוזניים רחבות, צועד על 4 רגליים חזקות',
-    soundEmoji: '🐘'
+    soundEmoji: '🐘',
+    imagePath: '/animals/row-3-column-4.png'
   },
   {
     id: 'giraffe',
@@ -186,7 +163,8 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     category: 'wild',
     categoryLabel: 'חיות ספארי',
     description: 'החיה הגבוהה בעולם עם צוואר ארוך ו-4 רגליים דקות וגבוהות',
-    soundEmoji: '🦒'
+    soundEmoji: '🦒',
+    imagePath: '/animals/row-3-column-5.png'
   },
   {
     id: 'lion',
@@ -196,7 +174,8 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     category: 'wild',
     categoryLabel: 'חיות ספארי',
     description: 'מלך החיות בעל רעמה מפוארת הצועד בגאווה על 4 כפות',
-    soundEmoji: '🦁'
+    soundEmoji: '🦁',
+    imagePath: '/animals/row-4-column-1.png'
   },
   {
     id: 'tiger',
@@ -206,17 +185,8 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     category: 'wild',
     categoryLabel: 'חיות בר',
     description: 'טורף חזק ומהיר עם פסים ו-4 כפות חזקות',
-    soundEmoji: '🐯'
-  },
-  {
-    id: 'turtle',
-    name: 'צב',
-    nameNikud: 'צָב',
-    legs: 4,
-    category: 'reptiles',
-    categoryLabel: 'זוחלים',
-    description: 'נושא שריון על גבו וזוחל לאט על 4 רגליים קצרות',
-    soundEmoji: '🐢'
+    soundEmoji: '🐯',
+    imagePath: '/animals/row-4-column-3.png'
   },
   {
     id: 'bear',
@@ -226,17 +196,19 @@ export const ANIMALS_DATABASE: AnimalItem[] = [
     category: 'wild',
     categoryLabel: 'חיות בר',
     description: 'חיית יער גדולה ופרוותית הצועדת בכוח על 4 כפות עבות',
-    soundEmoji: '🐻'
+    soundEmoji: '🐻',
+    imagePath: '/animals/row-4-column-4.png'
   },
   {
-    id: 'rabbit',
-    name: 'ארנב',
-    nameNikud: 'אַרְנָב',
+    id: 'sheep',
+    name: 'כבשה',
+    nameNikud: 'כִּבְשָׂה',
     legs: 4,
-    category: 'pets',
-    categoryLabel: 'יונקים קטנים',
-    description: 'בעל אוזניים ארוכות המקפץ בזריזות על 4 רגליים',
-    soundEmoji: '🐰'
+    category: 'farm',
+    categoryLabel: 'חיות חווה',
+    description: 'עטופה בצמר רך ועומדת ברוגע בעדר על 4 רגליים',
+    soundEmoji: '🐑',
+    imagePath: '/animals/row-4-column-5.png'
   }
 ];
 

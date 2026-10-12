@@ -94,6 +94,7 @@ export interface AnimalItem {
   categoryLabel: string;
   description: string;
   soundEmoji?: string;
+  imagePath?: string;
 }
 
 export type AnimalWorksheetTemplate = 'cut_and_paste' | 'line_matching';
@@ -106,8 +107,6 @@ export type AnimalCardsSize = 'medium' | 'large';
 export type AnimalCardsPerSheet = 4 | 6; // 4 = extra large (9.5-10cm) 2x2, 6 = medium-large (8cm) 2x3
 export type AnimalCardBgStyle = 'clean_white' | 'pastel_tint' | 'vibrant_border';
 export type AnimalCutLinesStyle = 'dashed' | 'crop_marks' | 'solid';
-
-export type AnimalArtStyle = 'classic' | 'story_animation';
 
 export type MainViewType = 'tags' | 'tables' | 'animal_sorting';
 
