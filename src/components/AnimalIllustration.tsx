@@ -1,24 +1,38 @@
 import React from 'react';
-import { AnimalWorksheetColorMode } from '../types';
+import { AnimalWorksheetColorMode, AnimalArtStyle } from '../types';
+import { StoryAnimationIllustration } from './StoryAnimationIllustration';
 
 interface AnimalIllustrationProps {
   animalId: string;
   mode?: AnimalWorksheetColorMode;
+  artStyle?: AnimalArtStyle;
   className?: string;
   size?: number | string;
 }
 
 /**
  * Premium high-quality vector illustrations for animals with distinct, countable legs (2 or 4).
- * Supports both full vibrant preschool cartoon color mode and clean black & white coloring-book outline mode.
- * Each animal is designed to be immediately recognizable, highly authentic, and child-friendly.
+ * Supports both classic preschool vector style and the new warm storybook animation style,
+ * as well as full vibrant color mode and clean black & white coloring-book outline mode.
  */
 export const AnimalIllustration: React.FC<AnimalIllustrationProps> = ({
   animalId,
   mode = 'color',
+  artStyle = 'classic',
   className = 'w-full h-full',
   size
 }) => {
+  if (artStyle === 'story_animation') {
+    return (
+      <StoryAnimationIllustration
+        animalId={animalId}
+        mode={mode}
+        className={className}
+        size={size}
+      />
+    );
+  }
+
   const isColoring = mode === 'coloring_book';
 
   // Base stroke styling

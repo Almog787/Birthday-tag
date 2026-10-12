@@ -35,7 +35,8 @@ import {
   AnimalWorksheetColorMode,
   AnimalCardsPerSheet,
   AnimalCardBgStyle,
-  AnimalCutLinesStyle
+  AnimalCutLinesStyle,
+  AnimalArtStyle
 } from '../types';
 import { ANIMALS_DATABASE, DEFAULT_SELECTED_ANIMAL_IDS } from '../data/animals';
 import { AnimalIllustration } from './AnimalIllustration';
@@ -108,6 +109,7 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
   const [cardsPerSheet, setCardsPerSheet] = useState<AnimalCardsPerSheet>(4); // 4 = Extra Large 2x2, 6 = Medium-Large 2x3
   const [selectedAnimalIds, setSelectedAnimalIds] = useState<string[]>(DEFAULT_SELECTED_ANIMAL_IDS);
   const [colorMode, setColorMode] = useState<AnimalWorksheetColorMode>('color');
+  const [artStyle, setArtStyle] = useState<AnimalArtStyle>('story_animation'); // 'story_animation' (סגנון האנימציה של הפיל) or 'classic'
   const [cardBgStyle, setCardBgStyle] = useState<AnimalCardBgStyle>('clean_white');
   const [cutLinesStyle, setCutLinesStyle] = useState<AnimalCutLinesStyle>('dashed');
   const [showLegsHint, setShowLegsHint] = useState<boolean>(false); // False by default so kids count legs themselves!
@@ -683,6 +685,63 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
               <span>התאמת עיצוב הכרטיסיות</span>
             </h3>
 
+            {/* Art Style Selection: Story Animation (New) vs Classic (Old) */}
+            <div>
+              <label className="text-[11px] font-bold text-slate-700 mb-1.5 flex items-center justify-between">
+                <span>סגנון איור החיות:</span>
+                <span className="text-[10px] font-black bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded-full">
+                  חדש! סגנון אנימציה
+                </span>
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setArtStyle('story_animation')}
+                  className={`p-2.5 text-xs font-bold rounded-xl border text-right transition-all flex flex-col gap-1 ${
+                    artStyle === 'story_animation'
+                      ? 'border-rose-500 bg-rose-50 text-rose-950 shadow-xs ring-2 ring-rose-400'
+                      : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <span className="font-black text-[13px] flex items-center gap-1">
+                      <span>✨</span>
+                      <span>אנימציה וספרי ילדים</span>
+                    </span>
+                    {artStyle === 'story_animation' && (
+                      <span className="w-2 h-2 rounded-full bg-rose-500"></span>
+                    )}
+                  </div>
+                  <span className="text-[10px] text-slate-500 font-normal leading-tight">
+                    בהשראת ציור הפיל: עיניים נוצצות, לחיים ורודות וגוונים רכים
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setArtStyle('classic')}
+                  className={`p-2.5 text-xs font-bold rounded-xl border text-right transition-all flex flex-col gap-1 ${
+                    artStyle === 'classic'
+                      ? 'border-indigo-600 bg-indigo-50 text-indigo-950 shadow-xs ring-2 ring-indigo-400'
+                      : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <span className="font-black text-[13px] flex items-center gap-1">
+                      <span>🎨</span>
+                      <span>וקטור קלאסי לגן</span>
+                    </span>
+                    {artStyle === 'classic' && (
+                      <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+                    )}
+                  </div>
+                  <span className="text-[10px] text-slate-500 font-normal leading-tight">
+                    קווים גיאומטריים נקיים וצבעוניות יסוד ברורה
+                  </span>
+                </button>
+              </div>
+            </div>
+
             {/* Color Mode */}
             <div>
               <label className="text-[11px] font-bold text-slate-600 mb-1.5 block">מצב צבעוניות:</label>
@@ -965,7 +1024,7 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
                         className="w-4 h-4 text-rose-600 rounded-md focus:ring-rose-500 cursor-pointer pointer-events-none"
                       />
                       <div className="w-8 h-8 rounded-lg bg-white p-0.5 border border-slate-200 shadow-2xs shrink-0 flex items-center justify-center">
-                        <AnimalIllustration animalId={animal.id} mode={colorMode} />
+                        <AnimalIllustration animalId={animal.id} mode={colorMode} artStyle={artStyle} />
                       </div>
                       <div>
                         <div className="flex items-center gap-1.5">
@@ -1123,7 +1182,7 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
                           title="הקלק להסרה חזרה למגש"
                         >
                           <div className="w-12 h-12 mx-auto">
-                            <AnimalIllustration animalId={animal.id} mode={colorMode} />
+                            <AnimalIllustration animalId={animal.id} mode={colorMode} artStyle={artStyle} />
                           </div>
                           <span className="text-xs font-black block mt-1">{animal.nameNikud}</span>
                           <span className="text-[9px] text-rose-600 opacity-0 group-hover:opacity-100 block">
@@ -1180,7 +1239,7 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
                           title="הקלק להסרה חזרה למגש"
                         >
                           <div className="w-12 h-12 mx-auto">
-                            <AnimalIllustration animalId={animal.id} mode={colorMode} />
+                            <AnimalIllustration animalId={animal.id} mode={colorMode} artStyle={artStyle} />
                           </div>
                           <span className="text-xs font-black block mt-1">{animal.nameNikud}</span>
                           <span className="text-[9px] text-rose-600 opacity-0 group-hover:opacity-100 block">
@@ -1236,7 +1295,7 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
                           }`}
                         >
                           <div className="w-12 h-12">
-                            <AnimalIllustration animalId={animal.id} mode={colorMode} />
+                            <AnimalIllustration animalId={animal.id} mode={colorMode} artStyle={artStyle} />
                           </div>
                           <span className="text-xs font-black mt-1">{animal.nameNikud}</span>
                         </button>
@@ -1313,7 +1372,7 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
                   <div className="flex items-center justify-around z-10 my-auto">
                     {/* Visual 1: Rooster or Cute Bird SVG */}
                     <div className="w-28 h-28 bg-white p-2 rounded-2xl border-2 border-sky-300 shadow-sm shrink-0">
-                      <AnimalIllustration animalId="rooster" mode={colorMode} />
+                      <AnimalIllustration animalId="rooster" mode={colorMode} artStyle={artStyle} />
                     </div>
 
                     {/* Bold Giant Title */}
@@ -1331,7 +1390,7 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
 
                     {/* Visual 2: Penguin or Duck SVG */}
                     <div className="w-28 h-28 bg-white p-2 rounded-2xl border-2 border-sky-300 shadow-sm shrink-0">
-                      <AnimalIllustration animalId="penguin" mode={colorMode} />
+                      <AnimalIllustration animalId="penguin" mode={colorMode} artStyle={artStyle} />
                     </div>
                   </div>
 
@@ -1378,7 +1437,7 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
                   <div className="flex items-center justify-around z-10 my-auto">
                     {/* Visual 1: Cow SVG */}
                     <div className="w-28 h-28 bg-white p-2 rounded-2xl border-2 border-emerald-300 shadow-sm shrink-0">
-                      <AnimalIllustration animalId="cow" mode={colorMode} />
+                      <AnimalIllustration animalId="cow" mode={colorMode} artStyle={artStyle} />
                     </div>
 
                     {/* Bold Giant Title */}
@@ -1396,7 +1455,7 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
 
                     {/* Visual 2: Lion or Dog SVG */}
                     <div className="w-28 h-28 bg-white p-2 rounded-2xl border-2 border-emerald-300 shadow-sm shrink-0">
-                      <AnimalIllustration animalId="dog" mode={colorMode} />
+                      <AnimalIllustration animalId="dog" mode={colorMode} artStyle={artStyle} />
                     </div>
                   </div>
 
@@ -1523,6 +1582,7 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
                                 <AnimalIllustration
                                   animalId={animal.id}
                                   mode={colorMode}
+                                  artStyle={artStyle}
                                   className="w-full h-full max-h-full object-contain filter drop-shadow-2xs"
                                 />
                               </div>

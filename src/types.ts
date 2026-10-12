@@ -107,6 +107,8 @@ export type AnimalCardsPerSheet = 4 | 6; // 4 = extra large (9.5-10cm) 2x2, 6 = 
 export type AnimalCardBgStyle = 'clean_white' | 'pastel_tint' | 'vibrant_border';
 export type AnimalCutLinesStyle = 'dashed' | 'crop_marks' | 'solid';
 
+export type AnimalArtStyle = 'classic' | 'story_animation';
+
 export type MainViewType = 'tags' | 'tables' | 'animal_sorting';
 
 
