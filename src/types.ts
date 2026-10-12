@@ -79,3 +79,25 @@ export interface TableDesignTheme {
   accentBadge: string;
   frameBorderClass: string;
 }
+
+// ==========================================
+// Animal Sorting Worksheet Types
+// ==========================================
+export type AnimalLegsCount = 2 | 4;
+
+export interface AnimalItem {
+  id: string;
+  name: string;
+  nameNikud: string;
+  legs: AnimalLegsCount;
+  category: 'birds' | 'mammals' | 'reptiles' | 'pets' | 'farm' | 'wild';
+  categoryLabel: string;
+  description: string;
+  soundEmoji?: string;
+}
+
+export type AnimalWorksheetTemplate = 'cut_and_paste' | 'line_matching';
+export type AnimalWorksheetColorMode = 'color' | 'coloring_book';
+export type AnimalWorksheetBorder = 'kindergarten' | 'dots' | 'double' | 'clean';
+export type MainViewType = 'tags' | 'tables' | 'animal_sorting';
+

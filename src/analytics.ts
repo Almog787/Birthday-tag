@@ -29,10 +29,15 @@ export function trackEvent(eventName: string, params: Record<string, any> = {}):
 // Specific tracking helpers for Birthday Tags
 // ==========================================
 
-export function trackMainTabSwitch(tab: 'tags' | 'tables'): void {
+export function trackMainTabSwitch(tab: 'tags' | 'tables' | 'animal_sorting'): void {
   trackEvent('switch_main_module', {
     module_name: tab,
-    module_label: tab === 'tags' ? 'תגי יום הולדת' : 'טבלאות ומעקב לגן'
+    module_label:
+      tab === 'tags'
+        ? 'תגי יום הולדת'
+        : tab === 'tables'
+        ? 'טבלאות ומעקב לגן'
+        : 'דף פעילות ומיון חיות'
   });
 }
 
@@ -260,3 +265,58 @@ export function trackPrintTable(rowsCount: number, columnsCount: number, isLands
     orientation: isLandscape ? 'landscape' : 'portrait'
   });
 }
+
+// ==========================================
+// Animal Sorting Worksheet Specific Trackers
+// ==========================================
+
+export function trackAnimalTemplateChange(template: string): void {
+  trackEvent('animal_worksheet_template_change', {
+    template_type: template,
+    template_label: template === 'cut_and_paste' ? 'גזירה והדבקה' : 'מתיחת קו'
+  });
+}
+
+export function trackAnimalColorModeChange(mode: string): void {
+  trackEvent('animal_worksheet_color_mode_change', {
+    color_mode: mode,
+    mode_label: mode === 'color' ? 'צבעוני מלא' : 'שחור-לבן (דף צביעה)'
+  });
+}
+
+export function trackAnimalRandomPick(count: number): void {
+  trackEvent('animal_worksheet_random_pick', {
+    total_animals: count
+  });
+}
+
+export function trackAnimalToggle(animalId: string, animalName: string, selected: boolean): void {
+  trackEvent('animal_worksheet_toggle_animal', {
+    animal_id: animalId,
+    animal_name: animalName,
+    selected
+  });
+}
+
+export function trackAnimalBorderChange(border: string): void {
+  trackEvent('animal_worksheet_border_change', {
+    border_style: border
+  });
+}
+
+export function trackAnimalPrint(template: string, colorMode: string, count: number): void {
+  trackEvent('animal_worksheet_print_click', {
+    template,
+    color_mode: colorMode,
+    animals_count: count
+  });
+}
+
+export function trackAnimalPDFDownload(template: string, colorMode: string, count: number): void {
+  trackEvent('animal_worksheet_pdf_download', {
+    template,
+    color_mode: colorMode,
+    animals_count: count
+  });
+}
+

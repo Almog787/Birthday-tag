@@ -47,6 +47,8 @@ import {
 } from './constants';
 import { BulkImportModal } from './components/BulkImportModal';
 import { KindergartenTableView } from './components/KindergartenTableView';
+import { AnimalSortingView } from './components/AnimalSortingView';
+import { MainViewType } from './types';
 import {
   trackMainTabSwitch,
   trackTagSubTab,
@@ -75,8 +77,8 @@ import {
 } from './analytics';
 
 export default function App() {
-  // Main View Switcher: 'tags' (Birthday Tags) vs 'tables' (Kindergarten Tracking Tables)
-  const [mainView, setMainView] = useState<'tags' | 'tables'>('tags');
+  // Main View Switcher: 'tags' (Birthday Tags) vs 'tables' (Kindergarten Tracking Tables) vs 'animal_sorting' (Animal sorting worksheet)
+  const [mainView, setMainView] = useState<MainViewType>('tags');
 
   // Tags State with localStorage persistence
   const [tags, setTags] = useState<TagItem[]>(() => {
@@ -463,28 +465,34 @@ export default function App() {
           {/* Logo & Title */}
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-400 flex items-center justify-center text-white shadow-md font-extrabold text-lg sm:text-xl shrink-0">
-              {mainView === 'tags' ? '🎈' : '📋'}
+              {mainView === 'tags' ? '🎈' : mainView === 'tables' ? '📋' : '🐾'}
             </div>
             <div>
               <h1 className="text-sm sm:text-base md:text-lg font-black text-slate-900 leading-tight">
-                {mainView === 'tags' ? 'מעצב תגי יום הולדת לילדים' : 'טבלאות ומעקב מעוצבות לגן'}
+                {mainView === 'tags'
+                  ? 'מעצב תגי יום הולדת לילדים'
+                  : mainView === 'tables'
+                  ? 'טבלאות ומעקב מעוצבות לגן'
+                  : 'דף פעילות ומיון חיות להדפסה'}
               </h1>
               <p className="text-[11px] text-slate-500 hidden sm:block">
                 {mainView === 'tags'
                   ? `עיצוב תגים, תאריכים מוגדלים והורדת PDF (${tags.length} ילדים)`
-                  : `מעקב ציוד, מגבונים ותורנויות שבת להדפסה ול-PDF`}
+                  : mainView === 'tables'
+                  ? `מעקב ציוד, מגבונים ותורנויות שבת להדפסה ול-PDF`
+                  : `מיון 2 רגליים מול 4 רגליים • גזירה, הדבקה ומתיחת קו A4`}
               </p>
             </div>
           </div>
 
           {/* Module Switcher Tabs in Center */}
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 order-last md:order-none w-full md:w-auto justify-center">
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 order-last md:order-none w-full md:w-auto justify-center overflow-x-auto">
             <button
               onClick={() => {
                 trackMainTabSwitch('tags');
                 setMainView('tags');
               }}
-              className={`flex-1 md:flex-none px-3 py-1 text-xs sm:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+              className={`flex-1 md:flex-none px-3 py-1 text-xs sm:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 shrink-0 ${
                 mainView === 'tags'
                   ? 'bg-white text-rose-600 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
@@ -499,7 +507,7 @@ export default function App() {
                 trackMainTabSwitch('tables');
                 setMainView('tables');
               }}
-              className={`flex-1 md:flex-none px-3 py-1 text-xs sm:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+              className={`flex-1 md:flex-none px-3 py-1 text-xs sm:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 shrink-0 ${
                 mainView === 'tables'
                   ? 'bg-white text-rose-600 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
@@ -507,6 +515,24 @@ export default function App() {
             >
               <FileSpreadsheet className="w-3.5 h-3.5 text-rose-500" />
               <span>טבלאות מעקב לגן</span>
+            </button>
+
+            <button
+              onClick={() => {
+                trackMainTabSwitch('animal_sorting');
+                setMainView('animal_sorting');
+              }}
+              className={`flex-1 md:flex-none px-3 py-1 text-xs sm:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 shrink-0 ${
+                mainView === 'animal_sorting'
+                  ? 'bg-white text-rose-600 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <span>🐾</span>
+              <span>דף מיון חיות</span>
+              <span className="text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.2 rounded-full font-black">
+                חדש
+              </span>
             </button>
           </div>
 
@@ -597,7 +623,11 @@ export default function App() {
       )}
 
       {/* Render Active View */}
-      {mainView === 'tables' ? (
+      {mainView === 'animal_sorting' ? (
+        <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6">
+          <AnimalSortingView />
+        </main>
+      ) : mainView === 'tables' ? (
         <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6">
           <KindergartenTableView
             tags={tags}
@@ -1657,7 +1687,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="no-print bg-white border-t border-slate-200 py-3 text-center text-xs text-slate-500">
-        מעצב תגי יום הולדת וטבלאות מעקב לגן • מוכן להדפסה ב-A4 עם סימוני גזירה מדויקים
+        מעצב תגי יום הולדת, טבלאות מעקב לגן ודפי פעילות מיון חיות • מותאם להדפסה ב-A4 וב-PDF עם סימוני גזירה
       </footer>
 
     </div>
