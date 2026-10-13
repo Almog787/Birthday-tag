@@ -1015,412 +1015,430 @@ export default function App() {
 
                 </div>
 
-                {/* Date Position and Size Controls (User's direct request) */}
-                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                      <Calendar className="w-4 h-4 text-rose-500" />
-                      <span>הגדרות תאריך הלידה בתג:</span>
-                    </span>
-                    <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-slate-700">
-                      <span>הצג תאריך</span>
-                      <input
-                        type="checkbox"
-                        checked={showDate}
-                        onChange={(e) => {
-                          trackToggleDate(e.target.checked);
-                          setShowDate(e.target.checked);
-                        }}
-                        className="w-4 h-4 accent-rose-500 rounded"
-                      />
-                    </label>
-                  </div>
-
-                  {showDate && (
-                    <div className="space-y-3 pt-1 border-t border-slate-200">
-                      {/* Placement */}
+                {/* Conditional Content based on Tag Mode */}
+                {tagDisplayMode === 'name_only' ? (
+                  /* Clean Name-Only / Drawer Label Options */
+                  <div className="space-y-4">
+                    {/* Drawer Mode Active Banner */}
+                    <div className="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-950 flex items-start gap-2.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                       <div>
-                        <span className="text-[11px] font-bold text-slate-600 block mb-1">
-                          מיקום התאריך בכרטיס:
-                        </span>
-                        <div className="grid grid-cols-2 gap-2">
-                          <button
-                            onClick={() => {
-                              trackDatePlacementChange('under_name');
-                              setDatePlacement('under_name');
-                            }}
-                            className={`py-1.5 px-2 text-xs font-semibold rounded-lg border text-center transition-all ${
-                              datePlacement === 'under_name'
-                                ? 'bg-rose-500 text-white border-rose-600 font-bold shadow-xs'
-                                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
-                            }`}
-                          >
-                            ⭐ ישירות מתחת לשם (מומלץ)
-                          </button>
-                          <button
-                            onClick={() => {
-                              trackDatePlacementChange('bottom');
-                              setDatePlacement('bottom');
-                            }}
-                            className={`py-1.5 px-2 text-xs font-semibold rounded-lg border text-center transition-all ${
-                              datePlacement === 'bottom'
-                                ? 'bg-rose-500 text-white border-rose-600 font-bold shadow-xs'
-                                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
-                            }`}
-                          >
-                            בתחתית הכרטיס
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Size */}
-                      <div>
-                        <span className="text-[11px] font-bold text-slate-600 block mb-1">
-                          גודל פונט התאריך:
-                        </span>
-                        <div className="grid grid-cols-2 gap-2">
-                          <button
-                            onClick={() => {
-                              trackDateSizeChange('large');
-                              setDateSize('large');
-                            }}
-                            className={`py-1.5 px-2 text-xs font-semibold rounded-lg border text-center transition-all ${
-                              dateSize === 'large'
-                                ? 'bg-rose-500 text-white border-rose-600 font-bold shadow-xs'
-                                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
-                            }`}
-                          >
-                            🔤 גדול ובולט (כמו השם)
-                          </button>
-                          <button
-                            onClick={() => {
-                              trackDateSizeChange('medium');
-                              setDateSize('medium');
-                            }}
-                            className={`py-1.5 px-2 text-xs font-semibold rounded-lg border text-center transition-all ${
-                              dateSize === 'medium'
-                                ? 'bg-rose-500 text-white border-rose-600 font-bold shadow-xs'
-                                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
-                            }`}
-                          >
-                            תאריך קומפקטי
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Format */}
-                      <div>
-                        <span className="text-[11px] font-bold text-slate-600 block mb-1">
-                          מבנה התאריך:
-                        </span>
-                        <div className="grid grid-cols-2 gap-2">
-                          <button
-                            onClick={() => {
-                              trackEvent('change_date_format', { format: 'standard' });
-                              setDateFormat('standard');
-                            }}
-                            className={`py-1.5 px-2 text-xs font-semibold rounded-lg border text-center transition-all ${
-                              dateFormat === 'standard'
-                                ? 'bg-rose-500 text-white border-rose-600 font-bold shadow-xs'
-                                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
-                            }`}
-                          >
-                            תאריך בלבד (18.06)
-                          </button>
-                          <button
-                            onClick={() => {
-                              trackEvent('change_date_format', { format: 'hebrew_prefix' });
-                              setDateFormat('hebrew_prefix');
-                            }}
-                            className={`py-1.5 px-2 text-xs font-semibold rounded-lg border text-center transition-all ${
-                              dateFormat === 'hebrew_prefix'
-                                ? 'bg-rose-500 text-white border-rose-600 font-bold shadow-xs'
-                                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
-                            }`}
-                          >
-                            עם קידומת (בתאריך 18.06)
-                          </button>
-                        </div>
+                        <span className="text-xs font-bold block">מצב תוויות נקיות למגירות פעיל</span>
+                        <p className="text-[11px] text-emerald-800 mt-0.5">
+                          הכרטיסיות מוצגות עם שמות הילדים בלבד בגופן בולט ומוגדל, ללא תאריכים וללא קישוטים, לנוחות גזירה והדבקה מהירה על מגירות הילדים.
+                        </p>
                       </div>
                     </div>
-                  )}
-                </div>
 
-                {/* Theme Selector */}
-                <div>
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2.5">
-                    בחירת תבנית נושא מוכנה:
-                  </label>
-                  <div className="grid grid-cols-2 gap-2.5">
-                    {THEMES.map((theme) => (
-                      <button
-                        key={theme.id}
-                        onClick={() => {
-                          trackThemeChange(theme.id, theme.name);
-                          setSelectedTheme(theme);
-                          setSelectedFont(theme.fontFamily);
-                          setSelectedIcon(theme.icon);
-                          setSelectedPattern(theme.patternStyle);
-                          if (theme.borderColorHex) setCustomBorderColor('');
-                        }}
-                        className={`p-2.5 rounded-xl border text-right transition-all flex items-center justify-between ${
-                          selectedTheme.id === theme.id
-                            ? 'border-rose-500 ring-2 ring-rose-200 bg-rose-50/50 font-bold'
-                            : 'border-slate-200 hover:border-slate-300 bg-white'
-                        }`}
-                      >
-                        <span className="text-xs sm:text-sm">{theme.name}</span>
-                        {selectedTheme.id === theme.id && (
-                          <Check className="w-4 h-4 text-rose-600 shrink-0" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Background Color Palette Selection */}
-                <div>
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
-                    גווני צבע לרקע ולכרטיסים:
-                  </label>
-                  <div className="grid grid-cols-4 gap-2">
-                    {COLOR_PALETTES.map((palette) => (
-                      <button
-                        key={palette.id}
-                        onClick={() => {
-                          trackPaletteChange(palette.id);
-                          setSelectedPalette(palette.id);
-                          setSelectedTheme((prev) => ({
-                            ...prev,
-                            cardBg: palette.cardBg,
-                            borderColor: palette.borderColor,
-                            borderColorHex: palette.borderColorHex,
-                            textColor: palette.textColor,
-                            accentColor: palette.accentColor,
-                            subtextColor: palette.subtextColor,
-                            badgeBg: palette.badgeBg
-                          }));
-                        }}
-                        className={`p-2 rounded-xl border flex flex-col items-center gap-1.5 transition-all ${
-                          selectedPalette === palette.id
-                            ? 'border-rose-500 ring-2 ring-rose-200 bg-white font-bold'
-                            : 'border-slate-200 hover:border-slate-300 bg-slate-50'
-                        }`}
-                      >
-                        <div
-                          className="w-6 h-6 rounded-full border border-slate-300 shadow-xs"
-                          style={{ backgroundColor: palette.previewColor }}
-                        />
-                        <span className="text-[11px] text-slate-700">{palette.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Custom Border Color Picker */}
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                      צבע מסגרת וסימוני גזירה:
-                    </label>
-                    {customBorderColor && (
-                      <button
-                        onClick={() => {
-                          trackEvent('reset_custom_border_color');
-                          setCustomBorderColor('');
-                        }}
-                        className="text-[11px] text-rose-600 hover:underline font-semibold"
-                      >
-                        אפס לצבע התבנית
-                      </button>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="color"
-                      value={customBorderColor || selectedTheme.borderColorHex || '#cbd5e1'}
-                      onChange={(e) => {
-                        trackEvent('change_custom_border_color', { color: e.target.value });
-                        setCustomBorderColor(e.target.value);
-                      }}
-                      className="w-9 h-9 rounded-lg cursor-pointer border border-slate-300 p-0.5 bg-white"
-                    />
-                    <span className="text-xs text-slate-600">
-                      {customBorderColor
-                        ? `צבע מותאם אישית (${customBorderColor})`
-                        : `צבע ברירת מחדל של התבנית`}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Background Pattern / Texture Selection */}
-                <div>
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
-                    דוגמת רקע ומרקם לכרטיסים (Pattern):
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {BG_PATTERNS.map((pattern) => (
-                      <button
-                        key={pattern.id}
-                        onClick={() => {
-                          trackPatternChange(pattern.id);
-                          setSelectedPattern(pattern.id);
-                        }}
-                        className={`p-2.5 rounded-xl border text-xs text-right transition-all flex items-center justify-between ${
-                          selectedPattern === pattern.id
-                            ? 'border-rose-500 ring-2 ring-rose-200 bg-rose-50/50 font-bold text-rose-900'
-                            : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
-                        }`}
-                      >
-                        <span>{pattern.name}</span>
-                        {selectedPattern === pattern.id && (
-                          <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Gradient / Lighting Style */}
-                <div>
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
-                    תאורת רקע ומעברי צבע (Gradient):
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {GRADIENT_STYLES.map((grad) => (
-                      <button
-                        key={grad.id}
-                        onClick={() => {
-                          trackGradientChange(grad.id);
-                          setSelectedGradient(grad.id);
-                        }}
-                        className={`p-2.5 rounded-xl border text-xs text-right transition-all flex items-center justify-between ${
-                          selectedGradient === grad.id
-                            ? 'border-rose-500 ring-2 ring-rose-200 bg-rose-50/50 font-bold text-rose-900'
-                            : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
-                        }`}
-                      >
-                        <span>{grad.name}</span>
-                        {selectedGradient === grad.id && (
-                          <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Greeting Subtitle Input */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                      איחול / כותרת עליונה בתג:
-                    </label>
-                    <label className="flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-slate-600">
-                      <span>הצג איחול</span>
-                      <input
-                        type="checkbox"
-                        checked={showGreeting}
+                    {/* Font Selector */}
+                    <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                      <label className="text-xs font-bold text-slate-700 block mb-2">
+                        גופן (פונט עברי לשמות):
+                      </label>
+                      <select
+                        value={selectedFont}
                         onChange={(e) => {
-                          trackToggleGreeting(e.target.checked);
-                          setShowGreeting(e.target.checked);
+                          trackFontChange(e.target.value);
+                          setSelectedFont(e.target.value);
                         }}
-                        className="w-3.5 h-3.5 accent-rose-500 rounded"
-                      />
-                    </label>
-                  </div>
-                  {showGreeting && (
-                    <>
-                      <div className="flex gap-2 mb-2">
+                        className="w-full p-2.5 text-xs sm:text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-rose-400 focus:outline-none bg-white font-sans"
+                      >
+                        {FONTS.map((f) => (
+                          <option key={f.id} value={f.id}>
+                            {f.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Border Color */}
+                    <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-xs font-bold text-slate-700">
+                          צבע מסגרת וסימוני גזירה:
+                        </label>
+                        {customBorderColor && (
+                          <button
+                            onClick={() => {
+                              trackEvent('reset_custom_border_color');
+                              setCustomBorderColor('');
+                            }}
+                            className="text-[11px] text-rose-600 hover:underline font-semibold"
+                          >
+                            אפס צבע
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-3">
                         <input
-                          type="text"
-                          value={customTitle}
-                          onChange={(e) => setCustomTitle(e.target.value)}
-                          placeholder="למשל: יום הולדת שמח ל"
-                          className="flex-1 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-rose-400 focus:outline-none"
+                          type="color"
+                          value={customBorderColor || '#cbd5e1'}
+                          onChange={(e) => {
+                            trackEvent('change_custom_border_color', { color: e.target.value });
+                            setCustomBorderColor(e.target.value);
+                          }}
+                          className="w-8 h-8 rounded-lg cursor-pointer border border-slate-300 p-0.5 bg-white"
                         />
+                        <span className="text-xs text-slate-600">
+                          {customBorderColor ? `צבע מותאם (${customBorderColor})` : 'אפור עדין (סטנדרטי לגזירה)'}
+                        </span>
                       </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {['יום הולדת שמח ל', 'מזל טוב ל', 'חוגגים ל', 'יום הולדת שמח! 🎉'].map(
-                          (preset) => (
-                            <button
-                              key={preset}
-                              onClick={() => {
-                                trackEvent('select_greeting_preset', { preset });
-                                setCustomTitle(preset);
-                              }}
-                              className="px-2.5 py-1 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md transition-colors"
-                            >
-                              {preset}
-                            </button>
-                          )
+                    </div>
+                  </div>
+                ) : (
+                  /* Standard / Full Tag Options (Organized Cleanly) */
+                  <div className="space-y-5">
+                    {/* Date Position and Size Controls (User's direct request) */}
+                    <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                          <Calendar className="w-4 h-4 text-rose-500" />
+                          <span>הגדרות תאריך הלידה בתג:</span>
+                        </span>
+                        <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-slate-700">
+                          <span>הצג תאריך</span>
+                          <input
+                            type="checkbox"
+                            checked={showDate}
+                            onChange={(e) => {
+                              trackToggleDate(e.target.checked);
+                              setShowDate(e.target.checked);
+                            }}
+                            className="w-4 h-4 accent-rose-500 rounded"
+                          />
+                        </label>
+                      </div>
+
+                      {showDate && (
+                        <div className="space-y-3 pt-1 border-t border-slate-200">
+                          {/* Placement */}
+                          <div>
+                            <span className="text-[11px] font-bold text-slate-600 block mb-1">
+                              מיקום התאריך בכרטיס:
+                            </span>
+                            <div className="grid grid-cols-2 gap-2">
+                              <button
+                                onClick={() => {
+                                  trackDatePlacementChange('under_name');
+                                  setDatePlacement('under_name');
+                                }}
+                                className={`py-1.5 px-2 text-xs font-semibold rounded-lg border text-center transition-all ${
+                                  datePlacement === 'under_name'
+                                    ? 'bg-rose-500 text-white border-rose-600 font-bold shadow-xs'
+                                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                                }`}
+                              >
+                                ⭐ מתחת לשם (מומלץ)
+                              </button>
+                              <button
+                                onClick={() => {
+                                  trackDatePlacementChange('bottom');
+                                  setDatePlacement('bottom');
+                                }}
+                                className={`py-1.5 px-2 text-xs font-semibold rounded-lg border text-center transition-all ${
+                                  datePlacement === 'bottom'
+                                    ? 'bg-rose-500 text-white border-rose-600 font-bold shadow-xs'
+                                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                                }`}
+                              >
+                                בתחתית הכרטיס
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Size */}
+                          <div>
+                            <span className="text-[11px] font-bold text-slate-600 block mb-1">
+                              גודל פונט התאריך:
+                            </span>
+                            <div className="grid grid-cols-2 gap-2">
+                              <button
+                                onClick={() => {
+                                  trackDateSizeChange('large');
+                                  setDateSize('large');
+                                }}
+                                className={`py-1.5 px-2 text-xs font-semibold rounded-lg border text-center transition-all ${
+                                  dateSize === 'large'
+                                    ? 'bg-rose-500 text-white border-rose-600 font-bold shadow-xs'
+                                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                                }`}
+                              >
+                                🔤 גדול ובולט
+                              </button>
+                              <button
+                                onClick={() => {
+                                  trackDateSizeChange('medium');
+                                  setDateSize('medium');
+                                }}
+                                className={`py-1.5 px-2 text-xs font-semibold rounded-lg border text-center transition-all ${
+                                  dateSize === 'medium'
+                                    ? 'bg-rose-500 text-white border-rose-600 font-bold shadow-xs'
+                                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                                }`}
+                              >
+                                תאריך קומפקטי
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Format */}
+                          <div>
+                            <span className="text-[11px] font-bold text-slate-600 block mb-1">
+                              מבנה התאריך:
+                            </span>
+                            <div className="grid grid-cols-2 gap-2">
+                              <button
+                                onClick={() => {
+                                  trackEvent('change_date_format', { format: 'standard' });
+                                  setDateFormat('standard');
+                                }}
+                                className={`py-1.5 px-2 text-xs font-semibold rounded-lg border text-center transition-all ${
+                                  dateFormat === 'standard'
+                                    ? 'bg-rose-500 text-white border-rose-600 font-bold shadow-xs'
+                                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                                }`}
+                              >
+                                תאריך בלבד (18.06)
+                              </button>
+                              <button
+                                onClick={() => {
+                                  trackEvent('change_date_format', { format: 'hebrew_prefix' });
+                                  setDateFormat('hebrew_prefix');
+                                }}
+                                className={`py-1.5 px-2 text-xs font-semibold rounded-lg border text-center transition-all ${
+                                  dateFormat === 'hebrew_prefix'
+                                    ? 'bg-rose-500 text-white border-rose-600 font-bold shadow-xs'
+                                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                                }`}
+                              >
+                                עם קידומת (בתאריך 18.06)
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Theme Selector */}
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
+                        בחירת תבנית נושא מוכנה:
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {THEMES.map((theme) => (
+                          <button
+                            key={theme.id}
+                            onClick={() => {
+                              trackThemeChange(theme.id, theme.name);
+                              setSelectedTheme(theme);
+                              setSelectedFont(theme.fontFamily);
+                              setSelectedIcon(theme.icon);
+                              setSelectedPattern(theme.patternStyle);
+                              if (theme.borderColorHex) setCustomBorderColor('');
+                            }}
+                            className={`p-2.5 rounded-xl border text-right transition-all flex items-center justify-between ${
+                              selectedTheme.id === theme.id
+                                ? 'border-rose-500 ring-2 ring-rose-200 bg-rose-50/50 font-bold'
+                                : 'border-slate-200 hover:border-slate-300 bg-white'
+                            }`}
+                          >
+                            <span className="text-xs sm:text-sm">{theme.name}</span>
+                            {selectedTheme.id === theme.id && (
+                              <Check className="w-4 h-4 text-rose-600 shrink-0" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Background Color Palette Selection */}
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
+                        גווני צבע לרקע ולכרטיסים:
+                      </label>
+                      <div className="grid grid-cols-4 gap-2">
+                        {COLOR_PALETTES.map((palette) => (
+                          <button
+                            key={palette.id}
+                            onClick={() => {
+                              trackPaletteChange(palette.id);
+                              setSelectedPalette(palette.id);
+                              setSelectedTheme((prev) => ({
+                                ...prev,
+                                cardBg: palette.cardBg,
+                                borderColor: palette.borderColor,
+                                borderColorHex: palette.borderColorHex,
+                                textColor: palette.textColor,
+                                accentColor: palette.accentColor,
+                                subtextColor: palette.subtextColor,
+                                badgeBg: palette.badgeBg
+                              }));
+                            }}
+                            className={`p-2 rounded-xl border flex flex-col items-center gap-1.5 transition-all ${
+                              selectedPalette === palette.id
+                                ? 'border-rose-500 ring-2 ring-rose-200 bg-white font-bold'
+                                : 'border-slate-200 hover:border-slate-300 bg-slate-50'
+                            }`}
+                          >
+                            <div
+                              className="w-5 h-5 rounded-full border border-slate-300 shadow-xs"
+                              style={{ backgroundColor: palette.previewColor }}
+                            />
+                            <span className="text-[10px] text-slate-700">{palette.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Font Selector */}
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
+                        גופן (פונט עברי):
+                      </label>
+                      <select
+                        value={selectedFont}
+                        onChange={(e) => {
+                          trackFontChange(e.target.value);
+                          setSelectedFont(e.target.value);
+                        }}
+                        className="w-full p-2.5 text-xs sm:text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-rose-400 focus:outline-none bg-white font-sans"
+                      >
+                        {FONTS.map((f) => (
+                          <option key={f.id} value={f.id}>
+                            {f.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Custom Border Color Picker */}
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-xs font-bold text-slate-700">
+                          צבע מסגרת וסימוני גזירה:
+                        </label>
+                        {customBorderColor && (
+                          <button
+                            onClick={() => {
+                              trackEvent('reset_custom_border_color');
+                              setCustomBorderColor('');
+                            }}
+                            className="text-[11px] text-rose-600 hover:underline font-semibold"
+                          >
+                            אפס לצבע התבנית
+                          </button>
                         )}
                       </div>
-                    </>
-                  )}
-                </div>
-
-                {/* Font Selector */}
-                <div>
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
-                    גופן (פונט עברי):
-                  </label>
-                  <select
-                    value={selectedFont}
-                    onChange={(e) => {
-                      trackFontChange(e.target.value);
-                      setSelectedFont(e.target.value);
-                    }}
-                    className="w-full p-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-rose-400 focus:outline-none bg-white font-sans"
-                  >
-                    {FONTS.map((f) => (
-                      <option key={f.id} value={f.id}>
-                        {f.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Decorative Icon Choice */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                      איור / אייקון מקשט:
-                    </label>
-                    <label className="flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-slate-600">
-                      <span>הצג איורים</span>
-                      <input
-                        type="checkbox"
-                        checked={showDecorations}
-                        onChange={(e) => {
-                          trackToggleDecorations(e.target.checked);
-                          setShowDecorations(e.target.checked);
-                        }}
-                        className="w-3.5 h-3.5 accent-rose-500 rounded"
-                      />
-                    </label>
-                  </div>
-                  {showDecorations && (
-                    <div className="flex flex-wrap gap-2">
-                      {ICONS.map((icon) => (
-                        <button
-                          key={icon}
-                          onClick={() => {
-                            trackIconChange(icon);
-                            setSelectedIcon(icon);
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="color"
+                          value={customBorderColor || selectedTheme.borderColorHex || '#cbd5e1'}
+                          onChange={(e) => {
+                            trackEvent('change_custom_border_color', { color: e.target.value });
+                            setCustomBorderColor(e.target.value);
                           }}
-                          className={`w-10 h-10 rounded-xl text-lg flex items-center justify-center transition-all ${
-                            selectedIcon === icon
-                              ? 'bg-rose-500 text-white shadow-md scale-110'
-                              : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
-                          }`}
-                        >
-                          {icon}
-                        </button>
-                      ))}
+                          className="w-8 h-8 rounded-lg cursor-pointer border border-slate-300 p-0.5 bg-white"
+                        />
+                        <span className="text-xs text-slate-600">
+                          {customBorderColor
+                            ? `צבע מותאם (${customBorderColor})`
+                            : `צבע ברירת מחדל של התבנית`}
+                        </span>
+                      </div>
                     </div>
-                  )}
-                </div>
 
+                    {/* Greeting Subtitle Input */}
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-xs font-bold text-slate-700">
+                          איחול / כותרת עליונה בתג:
+                        </label>
+                        <label className="flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-slate-600">
+                          <span>הצג איחול</span>
+                          <input
+                            type="checkbox"
+                            checked={showGreeting}
+                            onChange={(e) => {
+                              trackToggleGreeting(e.target.checked);
+                              setShowGreeting(e.target.checked);
+                            }}
+                            className="w-3.5 h-3.5 accent-rose-500 rounded"
+                          />
+                        </label>
+                      </div>
+                      {showGreeting && (
+                        <>
+                          <div className="flex gap-2 mb-2">
+                            <input
+                              type="text"
+                              value={customTitle}
+                              onChange={(e) => setCustomTitle(e.target.value)}
+                              placeholder="למשל: יום הולדת שמח ל"
+                              className="flex-1 px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-rose-400 focus:outline-none"
+                            />
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {['יום הולדת שמח ל', 'מזל טוב ל', 'חוגגים ל', 'יום הולדת שמח! 🎉'].map(
+                              (preset) => (
+                                <button
+                                  key={preset}
+                                  onClick={() => {
+                                    trackEvent('select_greeting_preset', { preset });
+                                    setCustomTitle(preset);
+                                  }}
+                                  className="px-2.5 py-1 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md transition-colors"
+                                >
+                                  {preset}
+                                </button>
+                              )
+                            )}
+                          </div>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Decorative Icon Choice */}
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-xs font-bold text-slate-700">
+                          איור / אייקון מקשט:
+                        </label>
+                        <label className="flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-slate-600">
+                          <span>הצג איורים</span>
+                          <input
+                            type="checkbox"
+                            checked={showDecorations}
+                            onChange={(e) => {
+                              trackToggleDecorations(e.target.checked);
+                              setShowDecorations(e.target.checked);
+                            }}
+                            className="w-3.5 h-3.5 accent-rose-500 rounded"
+                          />
+                        </label>
+                      </div>
+                      {showDecorations && (
+                        <div className="flex flex-wrap gap-2">
+                          {ICONS.map((icon) => (
+                            <button
+                              key={icon}
+                              onClick={() => {
+                                trackIconChange(icon);
+                                setSelectedIcon(icon);
+                              }}
+                              className={`w-9 h-9 rounded-xl text-base flex items-center justify-center transition-all ${
+                                selectedIcon === icon
+                                  ? 'bg-rose-500 text-white shadow-md scale-105'
+                                  : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
+                              }`}
+                            >
+                              {icon}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

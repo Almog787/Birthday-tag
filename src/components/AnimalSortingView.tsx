@@ -124,10 +124,9 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
   // 'headers' = Category Header signs only
   // 'cards' = Picture cards pages only
   // 'both' = Complete kit (Headers + Cards)
-  // 'interactive' = Live digital magnetic board on screen!
   const [activeTab, setActiveTab] = useState<'both' | 'headers' | 'cards' | 'interactive'>('both');
   const [previewZoom, setPreviewZoom] = useState<number>(85); // 85%
-  const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
+  const [sidebarTab, setSidebarTab] = useState<'layout' | 'animals'>('layout');
 
   // 4. Animal Bank Search & Filter
   const [animalSearch, setAnimalSearch] = useState<string>('');
@@ -453,120 +452,35 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
   return (
     <div className="w-full pb-16 font-sans select-none" dir="rtl">
       {/* =========================================================================
-          HERO & HEADER BANNER
+          CLEAN UNIFIED HEADER & ACTION BAR (NO GAME TUTORIAL BANNER)
       ========================================================================= */}
-      <section className="no-print bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-600 rounded-2xl p-5 sm:p-6 text-white shadow-md mb-6 relative overflow-hidden">
-        <div className="absolute -left-10 -bottom-10 opacity-15 pointer-events-none text-9xl">
-          🐾
-        </div>
-        <div className="absolute -right-10 -top-10 opacity-15 pointer-events-none text-9xl">
-          👣
-        </div>
-
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold text-white shadow-xs">
-              <Sparkles className="w-3.5 h-3.5 text-amber-200" />
-              <span>ערכת איורים מקצועית למשחק פרונטלי בגן</span>
-              <span className="bg-amber-400 text-slate-900 text-[10px] font-black px-1.5 py-0.5 rounded-full">
-                לוח מגנטי
+      <div className="no-print bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-sm mb-6 flex flex-wrap items-center justify-between gap-3">
+        {/* Title & Quick Stats */}
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-rose-600 flex items-center justify-center text-white text-lg shadow-xs shrink-0">
+            🐾
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-sm sm:text-base font-black text-slate-900 tracking-tight leading-tight">
+                ערכת מיון חיות ללוח מגנטי
+              </h1>
+              <span className="bg-sky-50 text-sky-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-sky-200">
+                2 מול 4 רגליים
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight drop-shadow-xs">
-              ערכת משחק מגנטי: מיון חיות לפי רגליים (2 מול 4)
-            </h1>
-            <p className="text-sm sm:text-base text-white/90 max-w-2xl font-medium">
-              הדפסת כרטיסיות ענק ושלטי כותרת מותאמים ללוח מגנטי. גוזרים, מניילנים, מצמידים מגנט – ומשחקים יחד במפגש הגן!
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={() => setIsGuideOpen(!isGuideOpen)}
-              className="px-3.5 py-2 bg-white/15 hover:bg-white/25 backdrop-blur-md text-white text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center gap-1.5 shadow-xs border border-white/20"
-            >
-              <Lightbulb className="w-4 h-4 text-amber-300" />
-              <span>מדריך הכנה וטיפים לגננת</span>
-            </button>
+            <div className="flex items-center gap-2 text-[11px] text-slate-500 font-medium mt-0.5">
+              <span>👣 {balanceInfo.twoCount} על שתיים</span>
+              <span>•</span>
+              <span>🐾 {balanceInfo.fourCount} על ארבע</span>
+              <span>•</span>
+              <span className="font-bold text-rose-600">{totalA4Pages} דפי A4</span>
+            </div>
           </div>
         </div>
 
-        {/* Quick Preparation Steps Bar */}
-        <div className="mt-4 pt-4 border-t border-white/20 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-semibold text-white/95">
-          <div className="flex items-center gap-2 bg-white/10 px-2.5 py-1.5 rounded-lg">
-            <span className="w-5 h-5 rounded-full bg-white text-rose-600 flex items-center justify-center text-[11px] font-black shrink-0">1</span>
-            <span>מדפיסים על דפי A4</span>
-          </div>
-          <div className="flex items-center gap-2 bg-white/10 px-2.5 py-1.5 rounded-lg">
-            <span className="w-5 h-5 rounded-full bg-white text-rose-600 flex items-center justify-center text-[11px] font-black shrink-0">2</span>
-            <span>מניילנים בלמינציה</span>
-          </div>
-          <div className="flex items-center gap-2 bg-white/10 px-2.5 py-1.5 rounded-lg">
-            <span className="w-5 h-5 rounded-full bg-white text-rose-600 flex items-center justify-center text-[11px] font-black shrink-0">3</span>
-            <span>גוזרים לפי הקווים</span>
-          </div>
-          <div className="flex items-center gap-2 bg-white/10 px-2.5 py-1.5 rounded-lg">
-            <span className="w-5 h-5 rounded-full bg-white text-rose-600 flex items-center justify-center text-[11px] font-black shrink-0">4</span>
-            <span>מדביקים מגנט ומשחקים!</span>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          PREPARATION GUIDE & TEACHER TIPS COLLAPSIBLE
-      ========================================================================= */}
-      {isGuideOpen && (
-        <section className="no-print bg-amber-50 border-2 border-amber-200 rounded-2xl p-5 mb-6 text-slate-800 shadow-sm animate-fadeIn">
-          <div className="flex items-center justify-between mb-3 border-b border-amber-200 pb-2">
-            <div className="flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-amber-700" />
-              <h3 className="font-black text-amber-900 text-lg">
-                מדריך הכנה והפעלת הילדים במפגש הבוקר
-              </h3>
-            </div>
-            <button
-              onClick={() => setIsGuideOpen(false)}
-              className="text-xs text-amber-800 hover:text-amber-950 font-bold underline"
-            >
-              סגור מדריך
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div className="bg-white p-4 rounded-xl border border-amber-200 shadow-xs space-y-2">
-              <h4 className="font-black text-rose-700 flex items-center gap-1.5">
-                <Scissors className="w-4 h-4" />
-                <span>איך להכין את הערכה המגנטית שתחזיק שנים:</span>
-              </h4>
-              <ul className="space-y-1.5 text-xs text-slate-700 list-disc list-inside">
-                <li><strong>הדפסה:</strong> מומלץ להדפיס על נייר עבה (160 עד 200 גרם) או בריסטול לבן.</li>
-                <li><strong>למינציה:</strong> ניילון הכרטיסיות מגן עליהן מקריעה, שומן ומים ומעניק מראה קשיח ומקצועי.</li>
-                <li><strong>פס מגנטי:</strong> רכשו פס מגנטי דביק (מדבקה מאחור) בחנות יצירה, גזרו פיסות של 2-3 ס"מ והדביקו בגב כל כרטיסיה ושלט.</li>
-                <li><strong>אחסון:</strong> שומרים בקופסה ייעודית עם תווית "מיון חיות - 2 מול 4" בפינת הטבע/מדע בגן.</li>
-              </ul>
-            </div>
-
-            <div className="bg-white p-4 rounded-xl border border-amber-200 shadow-xs space-y-2">
-              <h4 className="font-black text-indigo-700 flex items-center gap-1.5">
-                <Smile className="w-4 h-4" />
-                <span>רעיונות לפעילויות מרתקות במפגש:</span>
-              </h4>
-              <ul className="space-y-1.5 text-xs text-slate-700 list-disc list-inside">
-                <li><strong>"הבלש סופר הרגליים":</strong> מחלקים כרטיסיה לילד/ה, הילד ניגש ללוח, סופר יחד עם כל הגן את הרגליים ומדביק תחת השלט הנכון.</li>
-                <li><strong>"חיקוי בתנועה":</strong> הילדים מחקים את הליכת החיה (קפיצה על שתיים כמו קנגורו, צעידה על ארבע כמו פיל).</li>
-                <li><strong>"מי החיה המוזרה?":</strong> האם ציפור היא על שתיים? למה לפרה יש פרסות? למה לברווז יש קרומי שחייה? שיח מעשיר על חיות ומאפייניהן!</li>
-              </ul>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* =========================================================================
-          MAIN ACTION & PRINT BAR (STICKY NO-PRINT)
-      ========================================================================= */}
-      <div className="no-print bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-md mb-6 flex flex-wrap items-center justify-between gap-3">
         {/* Navigation Tabs between Preview Modes */}
-        <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs sm:text-sm font-bold overflow-x-auto max-w-full">
+        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-bold overflow-x-auto max-w-full">
           <button
             onClick={() => setActiveTab('both')}
             className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
@@ -594,19 +508,7 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
             }`}
           >
             <Grid2X2 className="w-3.5 h-3.5" />
-            <span>כרטיסיות החיות ({cardPages.length} דפים)</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('interactive')}
-            className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === 'interactive'
-                ? 'bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-xs'
-                : 'text-amber-800 hover:text-amber-900 bg-amber-50'
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            <span>לוח מגנטי חי על המסך! 🎮</span>
+            <span>כרטיסיות החיות ({cardPages.length})</span>
           </button>
         </div>
 
@@ -614,45 +516,45 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => handlePrint('headers')}
-            className="px-2.5 sm:px-3 py-1.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-1.5"
-            title="מדפיס רק את דף שלטי הכותרת לראש הלוח"
+            className="px-2.5 py-1.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-1.5"
+            title="מדפיס רק את דף שלטי הכותרת"
           >
             <Printer className="w-3.5 h-3.5 text-slate-600" />
-            <span>הדפס שלטים</span>
+            <span className="hidden sm:inline">הדפס</span> שלטים
           </button>
 
           <button
             onClick={() => handlePrint('cards')}
-            className="px-2.5 sm:px-3 py-1.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-1.5"
-            title="מדפיס רק את דפי כרטיסיות החיות שנבחרו"
+            className="px-2.5 py-1.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-1.5"
+            title="מדפיס רק את דפי הכרטיסיות"
           >
             <Printer className="w-3.5 h-3.5 text-slate-600" />
-            <span>הדפס כרטיסיות</span>
+            <span className="hidden sm:inline">הדפס</span> כרטיסיות
           </button>
 
           <button
             onClick={() => handlePrint('all')}
-            className="px-3 sm:px-3.5 py-1.5 text-xs sm:text-sm font-black text-white bg-rose-600 hover:bg-rose-700 rounded-lg shadow-xs transition-all flex items-center gap-1.5"
-            title="מדפיס את כל הערכה: שלטים + כל כרטיסיות החיות"
+            className="px-3 py-1.5 text-xs sm:text-sm font-black text-white bg-rose-600 hover:bg-rose-700 rounded-lg shadow-xs transition-all flex items-center gap-1.5"
+            title="מדפיס את כל הערכה: שלטים + כרטיסיות"
           >
             <Printer className="w-4 h-4" />
-            <span>הדפס ערכה מלאה</span>
+            <span>הדפס הכל</span>
           </button>
 
           <button
             onClick={() => handleDownloadPDF(activeTab === 'both' ? 'all' : activeTab === 'headers' ? 'headers' : 'cards')}
             disabled={isExporting}
-            className="px-3 sm:px-3.5 py-1.5 text-xs sm:text-sm font-black text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 rounded-lg shadow-xs transition-all flex items-center gap-1.5 disabled:opacity-50"
+            className="px-3 py-1.5 text-xs sm:text-sm font-black text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 rounded-lg shadow-xs transition-all flex items-center gap-1.5 disabled:opacity-50"
           >
             {isExporting ? (
               <>
                 <RefreshCw className="w-4 h-4 animate-spin" />
-                <span>{exportProgress || 'מעבד PDF...'}</span>
+                <span>{exportProgress || 'מעבד...'}</span>
               </>
             ) : (
               <>
                 <Download className="w-4 h-4" />
-                <span>הורד PDF איכותי</span>
+                <span>הורד PDF</span>
               </>
             )}
           </button>
@@ -689,576 +591,609 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
         {/* =====================================================================
             LEFT/RIGHT SIDEBAR: CUSTOMIZATION & ANIMAL SELECTION (lg:col-span-4)
         ===================================================================== */}
-        <aside className="no-print lg:col-span-4 space-y-5">
-          {/* 1. Card Layout & Page Capacity Selector */}
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-black text-slate-800 flex items-center gap-1.5">
-                <Grid2X2 className="w-4 h-4 text-rose-500" />
-                <span>כמות כרטיסיות בדף A4 (קובע את גודל הכרטיסיה)</span>
-              </label>
-              <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                {cardsPerSheet === 1
-                  ? 'פוסטר A4 מלא'
-                  : cardsPerSheet === 2
-                  ? 'חצי דף (1x2)'
-                  : cardsPerSheet === 4
-                  ? 'גדול (2x2)'
-                  : cardsPerSheet === 6
-                  ? 'בינוני (2x3)'
-                  : cardsPerSheet === 8
-                  ? 'קומפקטי (2x4)'
-                  : 'מיני (3x3)'}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2">
-              {/* Option: 1 Card per page (Maximum A4 fill) */}
-              <button
-                type="button"
-                onClick={() => {
-                  trackAnimalCardsPerSheetChange(1);
-                  setCardsPerSheet(1);
-                }}
-                className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center justify-between ${
-                  cardsPerSheet === 1
-                    ? 'border-rose-500 bg-rose-50/70 text-rose-950 font-bold shadow-xs ring-2 ring-rose-400/20'
-                    : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
-                }`}
-              >
-                <span className="text-lg mb-0.5">🖼️</span>
-                <span className="text-xs font-black">1 בדף (ענק)</span>
-                <span className="text-[10px] text-rose-700 font-bold mt-1 bg-rose-100/80 px-1 rounded">
-                  מקסימום A4
-                </span>
-              </button>
-
-              {/* Option: 2 Cards per page */}
-              <button
-                type="button"
-                onClick={() => {
-                  trackAnimalCardsPerSheetChange(2);
-                  setCardsPerSheet(2);
-                }}
-                className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center justify-between ${
-                  cardsPerSheet === 2
-                    ? 'border-rose-500 bg-rose-50/70 text-rose-950 font-bold shadow-xs ring-2 ring-rose-400/20'
-                    : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
-                }`}
-              >
-                <span className="text-lg mb-0.5">📑</span>
-                <span className="text-xs font-black">2 בדף</span>
-                <span className="text-[10px] text-slate-500 mt-1">חצי דף</span>
-              </button>
-
-              {/* Option: 4 Cards per page (Recommended) */}
-              <button
-                type="button"
-                onClick={() => {
-                  trackAnimalCardsPerSheetChange(4);
-                  setCardsPerSheet(4);
-                }}
-                className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center justify-between ${
-                  cardsPerSheet === 4
-                    ? 'border-rose-500 bg-rose-50/70 text-rose-950 font-bold shadow-xs ring-2 ring-rose-400/20'
-                    : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
-                }`}
-              >
-                <span className="text-lg mb-0.5">🎴</span>
-                <span className="text-xs font-black">4 בדף (2x2)</span>
-                <span className="text-[10px] text-rose-700 font-bold mt-1 bg-rose-100/80 px-1 rounded">
-                  מומלץ לגן
-                </span>
-              </button>
-
-              {/* Option: 6 Cards per page */}
-              <button
-                type="button"
-                onClick={() => {
-                  trackAnimalCardsPerSheetChange(6);
-                  setCardsPerSheet(6);
-                }}
-                className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center justify-between ${
-                  cardsPerSheet === 6
-                    ? 'border-rose-500 bg-rose-50/70 text-rose-950 font-bold shadow-xs ring-2 ring-rose-400/20'
-                    : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
-                }`}
-              >
-                <span className="text-lg mb-0.5">🃏</span>
-                <span className="text-xs font-black">6 בדף (2x3)</span>
-                <span className="text-[10px] text-slate-500 mt-1">בינוני</span>
-              </button>
-
-              {/* Option: 8 Cards per page */}
-              <button
-                type="button"
-                onClick={() => {
-                  trackAnimalCardsPerSheetChange(8);
-                  setCardsPerSheet(8);
-                }}
-                className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center justify-between ${
-                  cardsPerSheet === 8
-                    ? 'border-rose-500 bg-rose-50/70 text-rose-950 font-bold shadow-xs ring-2 ring-rose-400/20'
-                    : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
-                }`}
-              >
-                <span className="text-lg mb-0.5">📇</span>
-                <span className="text-xs font-black">8 בדף (2x4)</span>
-                <span className="text-[10px] text-slate-500 mt-1">קומפקטי</span>
-              </button>
-
-              {/* Option: 9 Cards per page */}
-              <button
-                type="button"
-                onClick={() => {
-                  trackAnimalCardsPerSheetChange(9);
-                  setCardsPerSheet(9);
-                }}
-                className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center justify-between ${
-                  cardsPerSheet === 9
-                    ? 'border-rose-500 bg-rose-50/70 text-rose-950 font-bold shadow-xs ring-2 ring-rose-400/20'
-                    : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
-                }`}
-              >
-                <span className="text-lg mb-0.5">🀄</span>
-                <span className="text-xs font-black">9 בדף (3x3)</span>
-                <span className="text-[10px] text-slate-500 mt-1">מיני-קלפים</span>
-              </button>
-            </div>
+        <aside className="no-print lg:col-span-4 space-y-4">
+          {/* Organized Segmented Control Tabs */}
+          <div className="bg-slate-200/80 p-1 rounded-2xl flex items-center gap-1 shadow-inner">
+            <button
+              type="button"
+              onClick={() => setSidebarTab('layout')}
+              className={`flex-1 py-2 px-3 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+                sidebarTab === 'layout'
+                  ? 'bg-white text-rose-700 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Sliders className="w-4 h-4 text-rose-500" />
+              <span>הגדרות גודל ועיצוב</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setSidebarTab('animals')}
+              className={`flex-1 py-2 px-3 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+                sidebarTab === 'animals'
+                  ? 'bg-white text-emerald-800 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <span>בחירת חיות ({selectedAnimalIds.length})</span>
+            </button>
           </div>
 
-          {/* 1.5 Image Size Control inside Cards (שליטה בגודל התמונה בתוך הכרטיסיות) */}
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-black text-slate-800 flex items-center gap-1.5">
-                <Sliders className="w-4 h-4 text-emerald-600" />
-                <span>גודל התמונה בתוך הכרטיסיה</span>
-              </label>
-              <span className="text-[10px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
-                {imageScale === 'fill' ? 'מילוי מקסימלי (ברירת מחדל)' : `${imageZoomPercent}%`}
-              </span>
-            </div>
+          {/* TAB 1: LAYOUT, SIZES & STYLING */}
+          {sidebarTab === 'layout' && (
+            <div className="space-y-4 animate-fadeIn">
+              {/* 1. Card Layout & Page Capacity */}
+              <div className="bg-white p-4.5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                    <Grid2X2 className="w-4 h-4 text-rose-500" />
+                    <span>כמות כרטיסיות בדף A4 (גודל הכרטיסייה)</span>
+                  </label>
+                  <span className="text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
+                    {cardsPerSheet === 1
+                      ? 'פוסטר A4 מלא'
+                      : cardsPerSheet === 2
+                      ? 'חצי דף (1x2)'
+                      : cardsPerSheet === 4
+                      ? 'גדול (2x2) • מומלץ'
+                      : cardsPerSheet === 6
+                      ? 'בינוני (2x3)'
+                      : cardsPerSheet === 8
+                      ? 'קומפקטי (2x4)'
+                      : 'מיני (3x3)'}
+                  </span>
+                </div>
 
-            {/* Scale Presets */}
-            <div className="grid grid-cols-4 gap-1.5">
-              <button
-                type="button"
-                onClick={() => {
-                  setImageScale('fill');
-                  setImageZoomPercent(100);
-                }}
-                className={`py-2 px-1 text-center rounded-xl border transition-all text-xs font-black ${
-                  imageScale === 'fill'
-                    ? 'border-emerald-500 bg-emerald-50 text-emerald-950 ring-2 ring-emerald-400/30'
-                    : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <span>🌟 מלא</span>
-                <span className="block text-[9px] font-normal text-emerald-700">דיפולט</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setImageScale('large');
-                  setImageZoomPercent(88);
-                }}
-                className={`py-2 px-1 text-center rounded-xl border transition-all text-xs font-bold ${
-                  imageScale === 'large'
-                    ? 'border-emerald-500 bg-emerald-50 text-emerald-950 ring-2 ring-emerald-400/30'
-                    : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <span>גדול</span>
-                <span className="block text-[9px] font-normal text-slate-500">88%</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setImageScale('medium');
-                  setImageZoomPercent(74);
-                }}
-                className={`py-2 px-1 text-center rounded-xl border transition-all text-xs font-bold ${
-                  imageScale === 'medium'
-                    ? 'border-emerald-500 bg-emerald-50 text-emerald-950 ring-2 ring-emerald-400/30'
-                    : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <span>בינוני</span>
-                <span className="block text-[9px] font-normal text-slate-500">74%</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setImageScale('contained');
-                  setImageZoomPercent(60);
-                }}
-                className={`py-2 px-1 text-center rounded-xl border transition-all text-xs font-bold ${
-                  imageScale === 'contained'
-                    ? 'border-emerald-500 bg-emerald-50 text-emerald-950 ring-2 ring-emerald-400/30'
-                    : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <span>מרווח</span>
-                <span className="block text-[9px] font-normal text-slate-500">60%</span>
-              </button>
-            </div>
-
-            {/* Fine-tuning Slider */}
-            <div className="pt-1 border-t border-slate-100">
-              <div className="flex items-center justify-between text-[11px] font-semibold text-slate-600 mb-1">
-                <span>זום עדין לתמונה:</span>
-                <span className="font-mono text-emerald-700 font-bold">{imageZoomPercent}%</span>
-              </div>
-              <input
-                type="range"
-                min="50"
-                max="125"
-                step="5"
-                value={imageZoomPercent}
-                onChange={(e) => {
-                  const val = Number(e.target.value);
-                  setImageZoomPercent(val);
-                  if (val === 100) setImageScale('fill');
-                  else if (val >= 85) setImageScale('large');
-                  else if (val >= 70) setImageScale('medium');
-                  else setImageScale('contained');
-                }}
-                className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
-              />
-              <div className="flex justify-between text-[9px] text-slate-400 mt-1">
-                <span>50% קטן</span>
-                <span>100% מילוי מושלם</span>
-                <span>125% תקריב</span>
-              </div>
-            </div>
-          </div>
-
-          {/* 2. Visual Style & Color Options */}
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-            <h3 className="text-xs font-black text-slate-800 flex items-center gap-1.5">
-              <Sliders className="w-4 h-4 text-indigo-500" />
-              <span>התאמת עיצוב הכרטיסיות</span>
-            </h3>
-
-
-            {/* Color Mode */}
-            <div>
-              <label className="text-[11px] font-bold text-slate-600 mb-1.5 block">מצב צבעוניות:</label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    trackAnimalColorModeChange('color');
-                    setColorMode('color');
-                  }}
-                  className={`py-2 px-3 text-xs font-bold rounded-xl border transition-all flex items-center justify-center gap-1.5 ${
-                    colorMode === 'color'
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-900 shadow-xs ring-1 ring-indigo-500'
-                      : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  <span className="text-sm">🎨</span>
-                  <span>צבעוני עשיר ומלא</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    trackAnimalColorModeChange('coloring_book');
-                    setColorMode('coloring_book');
-                  }}
-                  className={`py-2 px-3 text-xs font-bold rounded-xl border transition-all flex items-center justify-center gap-1.5 ${
-                    colorMode === 'coloring_book'
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-900 shadow-xs ring-1 ring-indigo-500'
-                      : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  <span className="text-sm">✏️</span>
-                  <span>שחור-לבן לצביעה</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Card Background Style */}
-            <div>
-              <label className="text-[11px] font-bold text-slate-600 mb-1.5 block">סגנון רקע כרטיסיה:</label>
-              <div className="grid grid-cols-3 gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setCardBgStyle('clean_white')}
-                  className={`py-1.5 px-2 text-[11px] font-bold rounded-lg border text-center transition-all ${
-                    cardBgStyle === 'clean_white'
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-900'
-                      : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  לבן נקי
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCardBgStyle('pastel_tint')}
-                  className={`py-1.5 px-2 text-[11px] font-bold rounded-lg border text-center transition-all ${
-                    cardBgStyle === 'pastel_tint'
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-900'
-                      : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  פסטל רך
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCardBgStyle('vibrant_border')}
-                  className={`py-1.5 px-2 text-[11px] font-bold rounded-lg border text-center transition-all ${
-                    cardBgStyle === 'vibrant_border'
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-900'
-                      : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  מסגרת עבה
-                </button>
-              </div>
-            </div>
-
-            {/* Cut Lines Style */}
-            <div>
-              <label className="text-[11px] font-bold text-slate-600 mb-1.5 block">קווי חיתוך וגזירה:</label>
-              <div className="grid grid-cols-3 gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setCutLinesStyle('dashed')}
-                  className={`py-1.5 px-2 text-[11px] font-bold rounded-lg border text-center transition-all ${
-                    cutLinesStyle === 'dashed'
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-900'
-                      : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  ✂️ מקווקו
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCutLinesStyle('crop_marks')}
-                  className={`py-1.5 px-2 text-[11px] font-bold rounded-lg border text-center transition-all ${
-                    cutLinesStyle === 'crop_marks'
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-900'
-                      : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  ⌜ ⌝ פינות חיתוך
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCutLinesStyle('solid')}
-                  className={`py-1.5 px-2 text-[11px] font-bold rounded-lg border text-center transition-all ${
-                    cutLinesStyle === 'solid'
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-900'
-                      : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  מסגרת רגילה
-                </button>
-              </div>
-            </div>
-
-            {/* Toggle Legs Hint (👣 / 🐾) */}
-            <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-              <div>
-                <label className="text-xs font-bold text-slate-800 block">
-                  רמז סמל רגליים בפינה (👣 / 🐾)
-                </label>
-                <span className="text-[11px] text-slate-500">
-                  {showLegsHint ? 'מוצג רמז בפינה' : 'מוסתר – הילדים סופרים בעצמם! (מומלץ)'}
-                </span>
-              </div>
-              <input
-                type="checkbox"
-                checked={showLegsHint}
-                onChange={(e) => setShowLegsHint(e.target.checked)}
-                className="w-4 h-4 text-rose-600 rounded-md focus:ring-rose-500 cursor-pointer"
-              />
-            </div>
-          </div>
-
-          {/* 3. Animal Selection Bank (Checklist & Quick Buttons) */}
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3.5">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-xs font-black text-slate-800 flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>בנק החיות לבחירה ({ANIMALS_DATABASE.length} זמינות)</span>
-                </h3>
-                <p className="text-[11px] text-slate-500 mt-0.5">
-                  סמנו אילו חיות יופיעו בערכה להדפסה
-                </p>
-              </div>
-            </div>
-
-            {/* Balance Status Banner */}
-            <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-slate-800">{balanceInfo.total} חיות נבחרו:</span>
-                <span className="text-sky-700 font-bold bg-sky-100 px-1.5 py-0.5 rounded-md">
-                  👣 {balanceInfo.twoCount} על שתיים
-                </span>
-                <span className="text-emerald-700 font-bold bg-emerald-100 px-1.5 py-0.5 rounded-md">
-                  🐾 {balanceInfo.fourCount} על ארבע
-                </span>
-              </div>
-              {balanceInfo.isBalanced && (
-                <span className="text-[10px] font-black bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full">
-                  מאוזן 50:50!
-                </span>
-              )}
-            </div>
-
-            {/* Quick Selection Buttons */}
-            <div className="flex flex-wrap gap-1.5">
-              <button
-                type="button"
-                onClick={handleSelectBalanced}
-                className="px-2 py-1 text-[11px] font-bold bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 rounded-lg transition-colors flex items-center gap-1"
-                title="בוחר 5 חיות של 2 רגליים ו-5 חיות של 4 רגליים (10 סה״כ)"
-              >
-                <Scale className="w-3 h-3 text-rose-600" />
-                <span>בחירה מאוזנת (5 מכל סוג)</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleSelectAll}
-                className="px-2 py-1 text-[11px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors"
-              >
-                בחר הכל ({ANIMALS_DATABASE.length})
-              </button>
-
-              <button
-                type="button"
-                onClick={handleSelectOnlyTwo}
-                className="px-2 py-1 text-[11px] font-bold bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-lg transition-colors"
-              >
-                רק 2 רגליים ({twoLeggedAnimals.length})
-              </button>
-
-              <button
-                type="button"
-                onClick={handleSelectOnlyFour}
-                className="px-2 py-1 text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-lg transition-colors"
-              >
-                רק 4 רגליים ({fourLeggedAnimals.length})
-              </button>
-
-              <button
-                type="button"
-                onClick={handleClearSelection}
-                className="px-2 py-1 text-[11px] font-bold text-slate-500 hover:text-slate-800 rounded-lg transition-colors"
-              >
-                נקה הכל
-              </button>
-            </div>
-
-            {/* Search & Filter */}
-            <div className="flex items-center gap-1.5">
-              <div className="relative flex-1">
-                <Search className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  value={animalSearch}
-                  onChange={(e) => setAnimalSearch(e.target.value)}
-                  placeholder="חיפוש חיה לפי שם..."
-                  className="w-full pr-8 pl-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-rose-500"
-                />
-              </div>
-
-              <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg text-[11px] font-bold">
-                <button
-                  type="button"
-                  onClick={() => setAnimalLegFilter('all')}
-                  className={`px-2 py-1 rounded-md ${
-                    animalLegFilter === 'all' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600'
-                  }`}
-                >
-                  הכל
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setAnimalLegFilter('2')}
-                  className={`px-2 py-1 rounded-md ${
-                    animalLegFilter === '2' ? 'bg-white text-sky-700 shadow-xs' : 'text-slate-600'
-                  }`}
-                >
-                  2
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setAnimalLegFilter('4')}
-                  className={`px-2 py-1 rounded-md ${
-                    animalLegFilter === '4' ? 'bg-white text-emerald-700 shadow-xs' : 'text-slate-600'
-                  }`}
-                >
-                  4
-                </button>
-              </div>
-            </div>
-
-            {/* Scrollable Animal Checklist */}
-            <div className="max-h-64 overflow-y-auto space-y-1.5 pr-0.5">
-              {filteredCatalogAnimals.map((animal) => {
-                const isSelected = selectedAnimalIds.includes(animal.id);
-                return (
-                  <div
-                    key={animal.id}
-                    onClick={() => handleToggleAnimal(animal.id)}
-                    className={`p-2 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
-                      isSelected
-                        ? animal.legs === 2
-                          ? 'border-sky-400 bg-sky-50/70 text-slate-900'
-                          : 'border-emerald-400 bg-emerald-50/70 text-slate-900'
-                        : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700 opacity-70'
+                <div className="grid grid-cols-3 gap-2">
+                  {/* Option: 4 Cards per page (Recommended for kindergarten) */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      trackAnimalCardsPerSheetChange(4);
+                      setCardsPerSheet(4);
+                    }}
+                    className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center justify-between ${
+                      cardsPerSheet === 4
+                        ? 'border-rose-500 bg-rose-50/70 text-rose-950 font-bold shadow-xs ring-2 ring-rose-400/20'
+                        : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => {}} // handled by parent onClick
-                        className="w-4 h-4 text-rose-600 rounded-md focus:ring-rose-500 cursor-pointer pointer-events-none"
-                      />
-                      <div className="w-8 h-8 rounded-lg bg-white p-0.5 border border-slate-200 shadow-2xs shrink-0 flex items-center justify-center">
-                        <AnimalIllustration animalId={animal.id} mode={colorMode} />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-black text-sm">{animal.nameNikud}</span>
-                          <span className="text-xs text-slate-400">({animal.name})</span>
-                        </div>
-                        <span className="text-[10px] text-slate-500 block">{animal.description}</span>
-                      </div>
-                    </div>
+                    <span className="text-base mb-0.5">🎴</span>
+                    <span className="text-xs font-black">4 בדף (2x2)</span>
+                    <span className="text-[9px] text-rose-700 font-bold mt-1 bg-rose-100/80 px-1 rounded">
+                      מומלץ לגן
+                    </span>
+                  </button>
 
-                    <div className="text-left shrink-0">
-                      <span
-                        className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${
-                          animal.legs === 2
-                            ? 'bg-sky-100 text-sky-800'
-                            : 'bg-emerald-100 text-emerald-800'
-                        }`}
-                      >
-                        {animal.legs === 2 ? '👣 2 רגליים' : '🐾 4 רגליים'}
-                      </span>
-                    </div>
+                  {/* Option: 1 Card per page (Maximum A4 fill) */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      trackAnimalCardsPerSheetChange(1);
+                      setCardsPerSheet(1);
+                    }}
+                    className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center justify-between ${
+                      cardsPerSheet === 1
+                        ? 'border-rose-500 bg-rose-50/70 text-rose-950 font-bold shadow-xs ring-2 ring-rose-400/20'
+                        : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
+                    }`}
+                  >
+                    <span className="text-base mb-0.5">🖼️</span>
+                    <span className="text-xs font-black">1 בדף (ענק)</span>
+                    <span className="text-[9px] text-rose-700 font-bold mt-1 bg-rose-100/80 px-1 rounded">
+                      מקסימום A4
+                    </span>
+                  </button>
+
+                  {/* Option: 2 Cards per page */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      trackAnimalCardsPerSheetChange(2);
+                      setCardsPerSheet(2);
+                    }}
+                    className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center justify-between ${
+                      cardsPerSheet === 2
+                        ? 'border-rose-500 bg-rose-50/70 text-rose-950 font-bold shadow-xs ring-2 ring-rose-400/20'
+                        : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
+                    }`}
+                  >
+                    <span className="text-base mb-0.5">📑</span>
+                    <span className="text-xs font-black">2 בדף</span>
+                    <span className="text-[9px] text-slate-500 mt-1">חצי דף</span>
+                  </button>
+
+                  {/* Option: 6 Cards per page */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      trackAnimalCardsPerSheetChange(6);
+                      setCardsPerSheet(6);
+                    }}
+                    className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center justify-between ${
+                      cardsPerSheet === 6
+                        ? 'border-rose-500 bg-rose-50/70 text-rose-950 font-bold shadow-xs ring-2 ring-rose-400/20'
+                        : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
+                    }`}
+                  >
+                    <span className="text-base mb-0.5">🃏</span>
+                    <span className="text-xs font-black">6 בדף (2x3)</span>
+                    <span className="text-[9px] text-slate-500 mt-1">בינוני</span>
+                  </button>
+
+                  {/* Option: 8 Cards per page */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      trackAnimalCardsPerSheetChange(8);
+                      setCardsPerSheet(8);
+                    }}
+                    className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center justify-between ${
+                      cardsPerSheet === 8
+                        ? 'border-rose-500 bg-rose-50/70 text-rose-950 font-bold shadow-xs ring-2 ring-rose-400/20'
+                        : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
+                    }`}
+                  >
+                    <span className="text-base mb-0.5">📇</span>
+                    <span className="text-xs font-black">8 בדף (2x4)</span>
+                    <span className="text-[9px] text-slate-500 mt-1">קומפקטי</span>
+                  </button>
+
+                  {/* Option: 9 Cards per page */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      trackAnimalCardsPerSheetChange(9);
+                      setCardsPerSheet(9);
+                    }}
+                    className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center justify-between ${
+                      cardsPerSheet === 9
+                        ? 'border-rose-500 bg-rose-50/70 text-rose-950 font-bold shadow-xs ring-2 ring-rose-400/20'
+                        : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
+                    }`}
+                  >
+                    <span className="text-base mb-0.5">🀄</span>
+                    <span className="text-xs font-black">9 בדף (3x3)</span>
+                    <span className="text-[9px] text-slate-500 mt-1">מיני-קלפים</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* 2. Image Size Control inside Cards */}
+              <div className="bg-white p-4.5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                    <Sliders className="w-4 h-4 text-emerald-600" />
+                    <span>גודל התמונה בתוך הכרטיסייה</span>
+                  </label>
+                  <span className="text-[10px] font-black text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                    {imageScale === 'fill' ? 'מילוי מלא (ברירת מחדל)' : `${imageZoomPercent}%`}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-4 gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setImageScale('fill');
+                      setImageZoomPercent(100);
+                    }}
+                    className={`py-2 px-1 text-center rounded-xl border transition-all text-xs font-black ${
+                      imageScale === 'fill'
+                        ? 'border-emerald-500 bg-emerald-50 text-emerald-950 ring-2 ring-emerald-400/30'
+                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>🌟 מלא</span>
+                    <span className="block text-[9px] font-normal text-emerald-700">דיפולט</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setImageScale('large');
+                      setImageZoomPercent(88);
+                    }}
+                    className={`py-2 px-1 text-center rounded-xl border transition-all text-xs font-bold ${
+                      imageScale === 'large'
+                        ? 'border-emerald-500 bg-emerald-50 text-emerald-950 ring-2 ring-emerald-400/30'
+                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>גדול</span>
+                    <span className="block text-[9px] font-normal text-slate-500">88%</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setImageScale('medium');
+                      setImageZoomPercent(74);
+                    }}
+                    className={`py-2 px-1 text-center rounded-xl border transition-all text-xs font-bold ${
+                      imageScale === 'medium'
+                        ? 'border-emerald-500 bg-emerald-50 text-emerald-950 ring-2 ring-emerald-400/30'
+                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>בינוני</span>
+                    <span className="block text-[9px] font-normal text-slate-500">74%</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setImageScale('contained');
+                      setImageZoomPercent(60);
+                    }}
+                    className={`py-2 px-1 text-center rounded-xl border transition-all text-xs font-bold ${
+                      imageScale === 'contained'
+                        ? 'border-emerald-500 bg-emerald-50 text-emerald-950 ring-2 ring-emerald-400/30'
+                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>מרווח</span>
+                    <span className="block text-[9px] font-normal text-slate-500">60%</span>
+                  </button>
+                </div>
+
+                {/* Fine-tuning Slider */}
+                <div className="pt-1.5 border-t border-slate-100">
+                  <div className="flex items-center justify-between text-[11px] font-semibold text-slate-600 mb-1">
+                    <span>זום מותאם אישית לתמונה:</span>
+                    <span className="font-mono text-emerald-700 font-bold">{imageZoomPercent}%</span>
                   </div>
-                );
-              })}
+                  <input
+                    type="range"
+                    min="50"
+                    max="125"
+                    step="5"
+                    value={imageZoomPercent}
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      setImageZoomPercent(val);
+                      if (val === 100) setImageScale('fill');
+                      else if (val >= 85) setImageScale('large');
+                      else if (val >= 70) setImageScale('medium');
+                      else setImageScale('contained');
+                    }}
+                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                  />
+                  <div className="flex justify-between text-[9px] text-slate-400 mt-1">
+                    <span>50% קטן</span>
+                    <span>100% מילוי מושלם</span>
+                    <span>125% תקריב</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. Visual Style & Printing Details */}
+              <div className="bg-white p-4.5 rounded-2xl border border-slate-200 shadow-xs space-y-3.5">
+                <h3 className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                  <Sliders className="w-4 h-4 text-indigo-500" />
+                  <span>התאמת עיצוב וקווי חיתוך</span>
+                </h3>
+
+                {/* Color Mode */}
+                <div>
+                  <label className="text-[11px] font-bold text-slate-600 mb-1.5 block">מצב צבעוניות:</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        trackAnimalColorModeChange('color');
+                        setColorMode('color');
+                      }}
+                      className={`py-2 px-3 text-xs font-bold rounded-xl border transition-all flex items-center justify-center gap-1.5 ${
+                        colorMode === 'color'
+                          ? 'border-indigo-600 bg-indigo-50 text-indigo-900 shadow-xs ring-1 ring-indigo-500'
+                          : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span className="text-sm">🎨</span>
+                      <span>צבעוני מלא</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        trackAnimalColorModeChange('coloring_book');
+                        setColorMode('coloring_book');
+                      }}
+                      className={`py-2 px-3 text-xs font-bold rounded-xl border transition-all flex items-center justify-center gap-1.5 ${
+                        colorMode === 'coloring_book'
+                          ? 'border-indigo-600 bg-indigo-50 text-indigo-900 shadow-xs ring-1 ring-indigo-500'
+                          : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span className="text-sm">✏️</span>
+                      <span>שחור-לבן לצביעה</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Card Background Style */}
+                <div>
+                  <label className="text-[11px] font-bold text-slate-600 mb-1.5 block">סגנון רקע כרטיסיה:</label>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setCardBgStyle('clean_white')}
+                      className={`py-1.5 px-2 text-[11px] font-bold rounded-lg border text-center transition-all ${
+                        cardBgStyle === 'clean_white'
+                          ? 'border-indigo-600 bg-indigo-50 text-indigo-900'
+                          : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      לבן נקי
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCardBgStyle('pastel_tint')}
+                      className={`py-1.5 px-2 text-[11px] font-bold rounded-lg border text-center transition-all ${
+                        cardBgStyle === 'pastel_tint'
+                          ? 'border-indigo-600 bg-indigo-50 text-indigo-900'
+                          : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      פסטל רך
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCardBgStyle('vibrant_border')}
+                      className={`py-1.5 px-2 text-[11px] font-bold rounded-lg border text-center transition-all ${
+                        cardBgStyle === 'vibrant_border'
+                          ? 'border-indigo-600 bg-indigo-50 text-indigo-900'
+                          : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      מסגרת עבה
+                    </button>
+                  </div>
+                </div>
+
+                {/* Cut Lines Style */}
+                <div>
+                  <label className="text-[11px] font-bold text-slate-600 mb-1.5 block">קווי חיתוך וגזירה:</label>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setCutLinesStyle('dashed')}
+                      className={`py-1.5 px-2 text-[11px] font-bold rounded-lg border text-center transition-all ${
+                        cutLinesStyle === 'dashed'
+                          ? 'border-indigo-600 bg-indigo-50 text-indigo-900'
+                          : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      ✂️ מקווקו
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCutLinesStyle('crop_marks')}
+                      className={`py-1.5 px-2 text-[11px] font-bold rounded-lg border text-center transition-all ${
+                        cutLinesStyle === 'crop_marks'
+                          ? 'border-indigo-600 bg-indigo-50 text-indigo-900'
+                          : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      ⌜ ⌝ פינות
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCutLinesStyle('solid')}
+                      className={`py-1.5 px-2 text-[11px] font-bold rounded-lg border text-center transition-all ${
+                        cutLinesStyle === 'solid'
+                          ? 'border-indigo-600 bg-indigo-50 text-indigo-900'
+                          : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      רציף
+                    </button>
+                  </div>
+                </div>
+
+                {/* Toggle Legs Hint (👣 / 🐾) */}
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                  <div>
+                    <label className="text-xs font-bold text-slate-800 block">
+                      רמז סמל רגליים בפינה (👣 / 🐾)
+                    </label>
+                    <span className="text-[11px] text-slate-500">
+                      {showLegsHint ? 'מוצג רמז בפינה' : 'מוסתר – הילדים סופרים בעצמם! (מומלץ)'}
+                    </span>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={showLegsHint}
+                    onChange={(e) => setShowLegsHint(e.target.checked)}
+                    className="w-4 h-4 text-rose-600 rounded-md focus:ring-rose-500 cursor-pointer"
+                  />
+                </div>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* TAB 2: ANIMAL SELECTION BANK */}
+          {sidebarTab === 'animals' && (
+            <div className="bg-white p-4.5 rounded-2xl border border-slate-200 shadow-xs space-y-3.5 animate-fadeIn">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>בנק החיות ({selectedAnimalIds.length} מתוך {ANIMALS_DATABASE.length})</span>
+                  </h3>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    סמנו אילו חיות יופיעו בערכה להדפסה
+                  </p>
+                </div>
+              </div>
+
+              {/* Balance Status Banner */}
+              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-slate-800">{balanceInfo.total} חיות:</span>
+                  <span className="text-sky-700 font-bold bg-sky-100 px-1.5 py-0.5 rounded-md">
+                    👣 {balanceInfo.twoCount} על שתיים
+                  </span>
+                  <span className="text-emerald-700 font-bold bg-emerald-100 px-1.5 py-0.5 rounded-md">
+                    🐾 {balanceInfo.fourCount} על ארבע
+                  </span>
+                </div>
+                {balanceInfo.isBalanced && (
+                  <span className="text-[10px] font-black bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full">
+                    מאוזן 50:50!
+                  </span>
+                )}
+              </div>
+
+              {/* Quick Selection Buttons */}
+              <div className="flex flex-wrap gap-1.5">
+                <button
+                  type="button"
+                  onClick={handleSelectBalanced}
+                  className="px-2 py-1 text-[11px] font-bold bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 rounded-lg transition-colors flex items-center gap-1"
+                  title="בוחר 5 חיות של 2 רגליים ו-5 חיות של 4 רגליים (10 סה״כ)"
+                >
+                  <Scale className="w-3 h-3 text-rose-600" />
+                  <span>בחירה מאוזנת (5 מכל סוג)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSelectAll}
+                  className="px-2 py-1 text-[11px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors"
+                >
+                  בחר הכל ({ANIMALS_DATABASE.length})
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSelectOnlyTwo}
+                  className="px-2 py-1 text-[11px] font-bold bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-lg transition-colors"
+                >
+                  רק 2 ({twoLeggedAnimals.length})
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSelectOnlyFour}
+                  className="px-2 py-1 text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-lg transition-colors"
+                >
+                  רק 4 ({fourLeggedAnimals.length})
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleClearSelection}
+                  className="px-2 py-1 text-[11px] font-bold text-slate-500 hover:text-slate-800 rounded-lg transition-colors"
+                >
+                  נקה
+                </button>
+              </div>
+
+              {/* Search & Filter */}
+              <div className="flex items-center gap-1.5">
+                <div className="relative flex-1">
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={animalSearch}
+                    onChange={(e) => setAnimalSearch(e.target.value)}
+                    placeholder="חיפוש חיה לפי שם..."
+                    className="w-full pr-8 pl-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-rose-500"
+                  />
+                </div>
+
+                <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg text-[11px] font-bold">
+                  <button
+                    type="button"
+                    onClick={() => setAnimalLegFilter('all')}
+                    className={`px-2 py-1 rounded-md ${
+                      animalLegFilter === 'all' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600'
+                    }`}
+                  >
+                    הכל
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAnimalLegFilter('2')}
+                    className={`px-2 py-1 rounded-md ${
+                      animalLegFilter === '2' ? 'bg-white text-sky-700 shadow-xs' : 'text-slate-600'
+                    }`}
+                  >
+                    2
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAnimalLegFilter('4')}
+                    className={`px-2 py-1 rounded-md ${
+                      animalLegFilter === '4' ? 'bg-white text-emerald-700 shadow-xs' : 'text-slate-600'
+                    }`}
+                  >
+                    4
+                  </button>
+                </div>
+              </div>
+
+              {/* Scrollable Animal Checklist */}
+              <div className="max-h-[460px] overflow-y-auto space-y-1.5 pr-0.5">
+                {filteredCatalogAnimals.map((animal) => {
+                  const isSelected = selectedAnimalIds.includes(animal.id);
+                  return (
+                    <div
+                      key={animal.id}
+                      onClick={() => handleToggleAnimal(animal.id)}
+                      className={`p-2 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
+                        isSelected
+                          ? animal.legs === 2
+                            ? 'border-sky-400 bg-sky-50/70 text-slate-900 shadow-2xs'
+                            : 'border-emerald-400 bg-emerald-50/70 text-slate-900 shadow-2xs'
+                          : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700 opacity-70'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => {}} // handled by parent onClick
+                          className="w-4 h-4 text-rose-600 rounded-md focus:ring-rose-500 cursor-pointer pointer-events-none"
+                        />
+                        <div className="w-9 h-9 rounded-lg bg-white p-0.5 border border-slate-200 shadow-2xs shrink-0 flex items-center justify-center overflow-hidden">
+                          <AnimalIllustration animalId={animal.id} mode={colorMode} />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-black text-sm">{animal.nameNikud}</span>
+                            <span className="text-xs text-slate-400">({animal.name})</span>
+                          </div>
+                          <span className="text-[10px] text-slate-500 block">{animal.description}</span>
+                        </div>
+                      </div>
+
+                      <div className="text-left shrink-0">
+                        <span
+                          className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${
+                            animal.legs === 2
+                              ? 'bg-sky-100 text-sky-800'
+                              : 'bg-emerald-100 text-emerald-800'
+                          }`}
+                        >
+                          {animal.legs === 2 ? '👣 2 רגליים' : '🐾 4 רגליים'}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </aside>
 
         {/* =====================================================================
             RIGHT/MAIN VIEW: PREVIEW OF A4 SHEETS & INTERACTIVE BOARD (lg:col-span-8)
         ===================================================================== */}
-        <main className="lg:col-span-8 space-y-6">
+        <section className="lg:col-span-8 space-y-6">
           {/* Zoom and Preview Summary Bar */}
           <div className="no-print bg-white p-3 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between text-xs">
             <div className="flex items-center gap-2 text-slate-600 font-semibold">
@@ -1306,16 +1241,9 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
               {/* Whiteboard Metal Trim & Header */}
               <div className="flex items-center justify-between border-b border-slate-700 pb-4 mb-6">
                 <div>
-                  <div className="inline-flex items-center gap-2 px-2.5 py-0.5 bg-rose-500/30 text-rose-300 text-xs font-bold rounded-full mb-1">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                    <span>לוח מגנטי אינטראקטיבי פעיל לגן ולבית</span>
-                  </div>
-                  <h2 className="text-xl sm:text-2xl font-black text-white">
-                    משחק מיון חיות: על שתיים או על ארבע?
+                  <h2 className="text-xl font-black text-white">
+                    לוח מיון חיות מגנטי
                   </h2>
-                  <p className="text-xs text-slate-400">
-                    הקליקו על חיה ממגש הכרטיסיות בתחתית, והקליקו על העמודה המתאימה בלוח!
-                  </p>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -1911,7 +1839,7 @@ export const AnimalSortingView: React.FC<AnimalSortingViewProps> = () => {
               </div>
             )}
           </div>
-        </main>
+        </section>
       </div>
     </div>
   );
