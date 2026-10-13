@@ -55,6 +55,10 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
   const [selectedThemeId, setSelectedThemeId] = useState<string>('rainbow');
   const [tableZoom, setTableZoom] = useState<number>(75);
 
+  // Column borders and alternate background enhancement (User specification)
+  const [columnBorderThickness, setColumnBorderThickness] = useState<'regular' | 'thick'>('thick');
+  const [alternateColumnBg, setAlternateColumnBg] = useState<boolean>(true);
+
   // Cell contents storage: rowId -> columnIdx -> text
   const [cellData, setCellData] = useState<Record<string, Record<number, string>>>({});
 
@@ -86,6 +90,8 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
         if (parsed.showKindergartenFrame !== undefined) setShowKindergartenFrame(parsed.showKindergartenFrame);
         if (parsed.density) setDensity(parsed.density);
         if (parsed.selectedThemeId) setSelectedThemeId(parsed.selectedThemeId);
+        if (parsed.columnBorderThickness) setColumnBorderThickness(parsed.columnBorderThickness);
+        if (parsed.alternateColumnBg !== undefined) setAlternateColumnBg(parsed.alternateColumnBg);
         if (parsed.cellData) setCellData(parsed.cellData);
       }
     } catch (e) {
@@ -106,6 +112,8 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
         showKindergartenFrame,
         density,
         selectedThemeId,
+        columnBorderThickness,
+        alternateColumnBg,
         cellData
       };
       localStorage.setItem('kindergarten_table_data_v2', JSON.stringify(dataToSave));
@@ -122,6 +130,8 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
     showKindergartenFrame,
     density,
     selectedThemeId,
+    columnBorderThickness,
+    alternateColumnBg,
     cellData
   ]);
 
@@ -530,6 +540,75 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
           </div>
         </div>
 
+        {/* Table Settings - Column Borders & Grid Enhancements (User Specification) */}
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+              <Columns className="w-4 h-4 text-rose-500" />
+              <span>הגדרות עמודות וקווי הפרדה (Table Settings)</span>
+            </h2>
+            <span className="text-[10px] bg-rose-50 text-rose-700 font-bold px-2 py-0.5 rounded-full">
+              שדרוג תצוגה
+            </span>
+          </div>
+
+          {/* Border Thickness Switch */}
+          <div>
+            <label className="text-xs font-bold text-slate-700 block mb-1.5">
+              עובי קווי הפרדה בין עמודות:
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => {
+                  trackEvent('change_table_border_thickness', { thickness: 'regular' });
+                  setColumnBorderThickness('regular');
+                }}
+                className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all text-center ${
+                  columnBorderThickness === 'regular'
+                    ? 'border-rose-500 bg-rose-50 text-rose-700 font-bold ring-2 ring-rose-200 shadow-xs'
+                    : 'border-slate-200 hover:bg-slate-50 text-slate-700'
+                }`}
+              >
+                רגיל (קו דק)
+              </button>
+              <button
+                onClick={() => {
+                  trackEvent('change_table_border_thickness', { thickness: 'thick' });
+                  setColumnBorderThickness('thick');
+                }}
+                className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all text-center ${
+                  columnBorderThickness === 'thick'
+                    ? 'border-rose-500 bg-rose-50 text-rose-700 font-bold ring-2 ring-rose-200 shadow-xs'
+                    : 'border-slate-200 hover:bg-slate-50 text-slate-700'
+                }`}
+              >
+                ⭐ מודגש / עבה (בולט)
+              </button>
+            </div>
+          </div>
+
+          {/* Alternate Column Backgrounds / Visual Column Separation */}
+          <div className="pt-2 border-t border-slate-100">
+            <label className="flex items-center justify-between text-xs font-bold text-slate-700 cursor-pointer">
+              <div className="flex flex-col">
+                <span>הפרדה ויזואלית (הצללת עמודות לסירוגין):</span>
+                <span className="text-[11px] text-slate-500 font-normal">
+                  צבע רקע חלופי בין העמודות למניעת טעויות במעקב
+                </span>
+              </div>
+              <input
+                type="checkbox"
+                checked={alternateColumnBg}
+                onChange={(e) => {
+                  trackEvent('toggle_table_alt_column_bg', { enabled: e.target.checked });
+                  setAlternateColumnBg(e.target.checked);
+                }}
+                className="w-4 h-4 accent-rose-500 rounded cursor-pointer shrink-0 mr-2"
+              />
+            </label>
+          </div>
+        </div>
+
         {/* Layout & Print Preferences */}
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
           <h2 className="text-sm font-bold text-slate-900">הגדרות הדפסה ופריסה ל-A4</h2>
@@ -656,6 +735,13 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
             <button
               onClick={() => {
                 trackPrintTable(tags.length, columns.length, isLandscape);
+                let printStyle = document.getElementById('table-dynamic-print-style') as HTMLStyleElement;
+                if (!printStyle) {
+                  printStyle = document.createElement('style');
+                  printStyle.id = 'table-dynamic-print-style';
+                  document.head.appendChild(printStyle);
+                }
+                printStyle.textContent = `@media print { @page { size: A4 ${isLandscape ? 'landscape' : 'portrait'}; margin: 0; } }`;
                 window.print();
               }}
               className="w-full py-2 px-4 font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors flex items-center justify-center gap-1.5 text-xs"
@@ -770,23 +856,32 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
             <div className="flex-1 overflow-hidden flex flex-col">
               <table className="w-full h-full border-collapse text-right text-xs table-fixed">
                 <thead>
-                  <tr className={`${activeTheme.headerBg} font-bold text-center`}>
+                  <tr className={`${activeTheme.headerBg} font-bold text-center border-b-2 border-slate-400`}>
                     {showRowNumbers && (
-                      <th className="border border-slate-300/60 p-1 w-8 text-center text-[11px]">
+                      <th className={`p-1 w-8 text-center text-[11px] border border-slate-400/70 ${
+                        columnBorderThickness === 'thick' ? 'border-l-2 border-l-slate-800 font-bold' : ''
+                      }`}>
                         מס'
                       </th>
                     )}
-                    <th className="border border-slate-300/60 p-1 w-28 sm:w-36 text-right pr-2 text-xs font-black">
+                    <th className={`p-1 w-28 sm:w-36 text-right pr-2 text-xs font-black border border-slate-400/70 ${
+                      columnBorderThickness === 'thick' ? 'border-l-2 border-l-slate-800' : ''
+                    }`}>
                       שם הילד / ה
                     </th>
-                    {columns.map((col, idx) => (
-                      <th
-                        key={idx}
-                        className="border border-slate-300/60 p-1 text-center font-bold truncate text-[11px]"
-                      >
-                        {col}
-                      </th>
-                    ))}
+                    {columns.map((col, idx) => {
+                      const isAltCol = alternateColumnBg && idx % 2 === 1;
+                      return (
+                        <th
+                          key={idx}
+                          className={`p-1 text-center font-bold truncate text-[11px] border border-slate-400/70 ${
+                            columnBorderThickness === 'thick' ? 'border-l-2 border-l-slate-800' : ''
+                          } ${isAltCol ? 'bg-black/5' : ''}`}
+                        >
+                          {col}
+                        </th>
+                      );
+                    })}
                   </tr>
                 </thead>
                 <tbody>
@@ -797,25 +892,40 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
                         key={tag.id}
                         className={`${
                           rowIsAlt ? activeTheme.altRowBg : 'bg-white'
-                        } border-b border-slate-200`}
+                        } border-b border-slate-300`}
                         style={{
                           height: density === 'compact' ? 'auto' : '26px'
                         }}
                       >
                         {showRowNumbers && (
-                          <td className="border border-slate-200 p-0.5 text-center text-[10px] text-slate-400 font-mono">
+                          <td className={`p-0.5 text-center text-[10px] text-slate-400 font-mono border border-slate-200 ${
+                            columnBorderThickness === 'thick' ? 'border-l-2 border-l-slate-700' : ''
+                          }`}>
                             {rowIdx + 1}
                           </td>
                         )}
-                        <td className="border border-slate-200 p-1 font-bold text-slate-900 truncate pr-2 text-[11px] sm:text-xs">
+                        <td className={`p-1 font-bold text-slate-900 truncate pr-2 text-[11px] sm:text-xs border border-slate-200 ${
+                          columnBorderThickness === 'thick' ? 'border-l-2 border-l-slate-700' : ''
+                        }`}>
                           {tag.name}
                         </td>
                         {columns.map((_, colIdx) => {
                           const currentVal = cellData[tag.id]?.[colIdx] || '';
+                          const isAltCol = alternateColumnBg && colIdx % 2 === 1;
                           return (
                             <td
                               key={colIdx}
-                              className="border border-slate-200 p-0.5 text-center"
+                              className={`p-0.5 text-center border border-slate-200 ${
+                                columnBorderThickness === 'thick'
+                                  ? 'border-l-2 border-l-slate-700'
+                                  : ''
+                              } ${
+                                isAltCol
+                                  ? rowIsAlt
+                                    ? 'bg-slate-100/90'
+                                    : 'bg-slate-50/90'
+                                  : ''
+                              }`}
                             >
                               <input
                                 type="text"
@@ -824,7 +934,7 @@ export const KindergartenTableView: React.FC<KindergartenTableViewProps> = ({
                                   handleCellChange(tag.id, colIdx, e.target.value)
                                 }
                                 placeholder="—"
-                                className="w-full h-full bg-transparent text-center text-[10px] text-slate-800 focus:bg-white focus:outline-none placeholder:text-slate-200 font-medium"
+                                className="w-full h-full bg-transparent text-center text-[10px] text-slate-800 focus:bg-white focus:outline-none placeholder:text-slate-300 font-medium"
                               />
                             </td>
                           );

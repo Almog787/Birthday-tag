@@ -4,6 +4,12 @@ export interface TagItem {
   date: string;
 }
 
+export type TagDisplayMode = 'full' | 'clean' | 'name_only';
+export type TagCardSizePreset = 'small_drawer' | 'medium_shelf' | 'large_door';
+export type TagFontSizePreset = 'regular' | 'large' | 'max_fill';
+
+export type TableColumnBorderThickness = 'regular' | 'thick' | 'extra_bold';
+
 export interface ThemePreset {
   id: string;
   name: string;

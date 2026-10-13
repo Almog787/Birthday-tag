@@ -34,7 +34,11 @@ import {
   ThemePreset,
   BackgroundPattern,
   GradientStyle,
-  ColorPalette
+  ColorPalette,
+  TagDisplayMode,
+  TagCardSizePreset,
+  TagFontSizePreset,
+  MainViewType
 } from './types';
 import {
   INITIAL_TAGS,
@@ -48,7 +52,6 @@ import {
 import { BulkImportModal } from './components/BulkImportModal';
 import { KindergartenTableView } from './components/KindergartenTableView';
 import { AnimalSortingView } from './components/AnimalSortingView';
-import { MainViewType } from './types';
 import {
   trackMainTabSwitch,
   trackTagSubTab,
@@ -107,7 +110,13 @@ export default function App() {
   const [customTitle, setCustomTitle] = useState<string>('יום הולדת שמח ל');
   const [showScissorMarks, setShowScissorMarks] = useState<boolean>(true);
   const [borderStyle, setBorderStyle] = useState<'dashed' | 'solid' | 'double'>('dashed');
-  const [tagsPerPage, setTagsPerPage] = useState<number>(10); // 8, 10, 12, 15
+  const [tagsPerPage, setTagsPerPage] = useState<number>(10); // 6, 8, 10, 12, 15, 18, 20, 24
+  
+  // Core Drawer Label & Card Resizing States (Section 2.A & 3 from spec)
+  const [tagDisplayMode, setTagDisplayMode] = useState<TagDisplayMode>('full'); // 'full' | 'clean' | 'name_only'
+  const [cardSizePreset, setCardSizePreset] = useState<TagCardSizePreset>('medium_shelf'); // 'small_drawer' | 'medium_shelf' | 'large_door'
+  const [fontSizePreset, setFontSizePreset] = useState<TagFontSizePreset>('large'); // 'regular' | 'large' | 'max_fill'
+  const [customFontScale, setCustomFontScale] = useState<number>(130); // 80% to 220%
   const [selectedIcon, setSelectedIcon] = useState<string>('🎈');
   const [selectedFont, setSelectedFont] = useState<string>(THEMES[0].fontFamily);
   const [dateFormat, setDateFormat] = useState<'standard' | 'hebrew_prefix'>('standard');
@@ -262,9 +271,10 @@ export default function App() {
     e.target.value = '';
   };
 
-  // Presets for tag modes (Mode 1: Full, Mode 2: Clean without illustrations, Mode 3: Name only)
-  const handleSetTagMode = (mode: 'full' | 'clean' | 'name_only') => {
+  // Presets for tag modes (Mode 1: Full, Mode 2: Clean with Name + Date, Mode 3: Name only for drawers)
+  const handleSetTagMode = (mode: TagDisplayMode) => {
     trackTagModeSelect(mode === 'name_only' ? 'text_only' : mode);
+    setTagDisplayMode(mode);
     if (mode === 'full') {
       setShowDate(true);
       setDatePlacement('under_name');
@@ -284,7 +294,83 @@ export default function App() {
       setShowGreeting(false);
       setShowDecorations(false);
       setShowScissorMarks(true);
+      setCardSizePreset('small_drawer');
+      setTagsPerPage(18); // ~6x4.2 cm per drawer label
+      setFontSizePreset('max_fill');
+      setCustomFontScale(160);
     }
+  };
+
+  // Card Size Preset Handler (Small drawer, Medium shelf/chair, Large door/birthday)
+  const handleSetCardSize = (size: TagCardSizePreset) => {
+    setCardSizePreset(size);
+    trackEvent('change_card_size_preset', { size });
+    if (size === 'small_drawer') {
+      trackTagsPerPageChange(18);
+      setTagsPerPage(18); // ~6x4.2 cm per drawer label (3x6)
+    } else if (size === 'medium_shelf') {
+      trackTagsPerPageChange(10);
+      setTagsPerPage(10); // ~9x5 cm standard shelf/chair label (2x5)
+    } else if (size === 'large_door') {
+      trackTagsPerPageChange(8);
+      setTagsPerPage(8); // ~9x6.5 cm large door/birthday label (2x4)
+    }
+  };
+
+  // Font Size Preset Handler
+  const handleSetFontSize = (preset: TagFontSizePreset) => {
+    setFontSizePreset(preset);
+    trackEvent('change_font_size_preset', { preset });
+    if (preset === 'regular') {
+      setCustomFontScale(100);
+    } else if (preset === 'large') {
+      setCustomFontScale(135);
+    } else if (preset === 'max_fill') {
+      setCustomFontScale(185);
+    }
+  };
+
+  // Helper to calculate responsive name font size based on card size, name length, and scale
+  const calculateNameFontSize = (name: string) => {
+    let baseRem = 1.95;
+    if (tagsPerPage <= 6) {
+      baseRem = 2.85;
+    } else if (tagsPerPage <= 8) {
+      baseRem = 2.4;
+    } else if (tagsPerPage <= 10) {
+      baseRem = 2.05;
+    } else if (tagsPerPage <= 12) {
+      baseRem = 1.85;
+    } else if (tagsPerPage <= 15) {
+      baseRem = 1.65;
+    } else if (tagsPerPage <= 18) {
+      baseRem = 1.45;
+    } else if (tagsPerPage <= 20) {
+      baseRem = 1.35;
+    } else {
+      // 24
+      baseRem = 1.2;
+    }
+
+    // In name-only drawer mode, no banners or dates take vertical space, so name can be significantly larger!
+    if (tagDisplayMode === 'name_only') {
+      baseRem *= 1.45;
+    }
+
+    // If max_fill is active, give an extra boost
+    if (fontSizePreset === 'max_fill') {
+      baseRem *= 1.25;
+    }
+
+    // Gentle adjustment for long double names
+    if (name.length > 10) {
+      baseRem *= 0.78;
+    } else if (name.length > 7) {
+      baseRem *= 0.88;
+    }
+
+    const scale = customFontScale / 100;
+    return `${(baseRem * scale).toFixed(2)}rem`;
   };
 
   // Calculate pagination pages
@@ -294,15 +380,23 @@ export default function App() {
   // Get grid dimensions class
   const getGridClass = () => {
     switch (tagsPerPage) {
+      case 6:
+        return 'grid-cols-2 grid-rows-3 gap-5 p-7'; // 2x3 (~9x8.5 cm)
       case 8:
-        return 'grid-cols-2 grid-rows-4 gap-4 p-6'; // 2x4
+        return 'grid-cols-2 grid-rows-4 gap-4 p-6'; // 2x4 (~9x6.5 cm)
       case 12:
-        return 'grid-cols-3 grid-rows-4 gap-3 p-5'; // 3x4
+        return 'grid-cols-3 grid-rows-4 gap-3 p-5'; // 3x4 (~6x6.5 cm)
       case 15:
-        return 'grid-cols-3 grid-rows-5 gap-2.5 p-4'; // 3x5
+        return 'grid-cols-3 grid-rows-5 gap-2.5 p-4'; // 3x5 (~6x5 cm)
+      case 18:
+        return 'grid-cols-3 grid-rows-6 gap-2 p-3.5'; // 3x6 (~6x4.2 cm - תווית מגירה)
+      case 20:
+        return 'grid-cols-4 grid-rows-5 gap-2 p-3'; // 4x5 (~4.8x5 cm - תווית מגירה מרובעת)
+      case 24:
+        return 'grid-cols-4 grid-rows-6 gap-1.5 p-2.5'; // 4x6 (~4.8x4.2 cm - קומפקטי למגירות)
       case 10:
       default:
-        return 'grid-cols-2 grid-rows-5 gap-3.5 p-5'; // 2x5
+        return 'grid-cols-2 grid-rows-5 gap-3.5 p-5'; // 2x5 (~9x5 cm)
     }
   };
 
@@ -555,6 +649,13 @@ export default function App() {
                 <button
                   onClick={() => {
                     trackPrintTags(tags.length, totalPages);
+                    let printStyle = document.getElementById('table-dynamic-print-style') as HTMLStyleElement;
+                    if (!printStyle) {
+                      printStyle = document.createElement('style');
+                      printStyle.id = 'table-dynamic-print-style';
+                      document.head.appendChild(printStyle);
+                    }
+                    printStyle.textContent = `@media print { @page { size: A4 portrait; margin: 0; } }`;
                     window.print();
                   }}
                   className="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-1.5"
@@ -695,51 +796,223 @@ export default function App() {
             {activeTab === 'design' && (
               <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-6">
                 
-                {/* Tag Presentation Modes (Section 2.A from spec) */}
-                <div className="p-3.5 bg-gradient-to-r from-rose-50 to-amber-50 rounded-xl border border-rose-200 space-y-2">
+                {/* Card Settings Control Panel (Spec Section 3) */}
+                <div className="p-4 bg-gradient-to-br from-rose-50/70 via-amber-50/50 to-orange-50/60 rounded-2xl border-2 border-rose-200 shadow-xs space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-rose-950 flex items-center gap-1.5">
+                    <span className="text-sm font-black text-rose-950 flex items-center gap-1.5">
                       <Sparkles className="w-4 h-4 text-rose-600" />
-                      <span>מצבי תצוגה מהירים לתגים:</span>
+                      <span>סרגל הגדרות תגים ותוויות (Card Settings)</span>
+                    </span>
+                    <span className="text-[10px] bg-rose-200/80 text-rose-800 font-bold px-2 py-0.5 rounded-full">
+                      גמישות מלאה לגננות
                     </span>
                   </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <button
-                      onClick={() => handleSetTagMode('full')}
-                      className={`p-2 rounded-lg text-xs font-bold transition-all text-center border ${
-                        showDate && showDecorations && showGreeting
-                          ? 'bg-rose-500 text-white border-rose-600 shadow-xs'
-                          : 'bg-white text-slate-700 border-slate-200 hover:bg-rose-50'
-                      }`}
-                    >
-                      🌟 מלא
-                      <span className="block text-[10px] font-normal opacity-85">שם + תאריך + איורים</span>
-                    </button>
 
-                    <button
-                      onClick={() => handleSetTagMode('clean')}
-                      className={`p-2 rounded-lg text-xs font-bold transition-all text-center border ${
-                        showDate && !showDecorations && !showGreeting
-                          ? 'bg-rose-500 text-white border-rose-600 shadow-xs'
-                          : 'bg-white text-slate-700 border-slate-200 hover:bg-rose-50'
-                      }`}
-                    >
-                      ✨ נקי
-                      <span className="block text-[10px] font-normal opacity-85">שם + תאריך בלבד</span>
-                    </button>
+                  {/* 1. מצב תצוגה: [תג מלא] | [שם + תאריך] | [שם בלבד (למגירות)] */}
+                  <div>
+                    <label className="text-xs font-bold text-slate-800 block mb-1.5">
+                      1. מצב תצוגה:
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        onClick={() => handleSetTagMode('full')}
+                        className={`p-2 rounded-xl text-xs font-bold transition-all text-center border ${
+                          tagDisplayMode === 'full'
+                            ? 'bg-rose-500 text-white border-rose-600 shadow-xs ring-2 ring-rose-200'
+                            : 'bg-white text-slate-700 border-slate-200 hover:bg-rose-50'
+                        }`}
+                      >
+                        🌟 תג מלא
+                        <span className="block text-[10px] font-normal opacity-90">שם + תאריך + איורים</span>
+                      </button>
 
-                    <button
-                      onClick={() => handleSetTagMode('name_only')}
-                      className={`p-2 rounded-lg text-xs font-bold transition-all text-center border ${
-                        !showDate && !showGreeting && !showDecorations
-                          ? 'bg-rose-500 text-white border-rose-600 shadow-xs'
-                          : 'bg-white text-slate-700 border-slate-200 hover:bg-rose-50'
-                      }`}
-                    >
-                      🏷️ שם בלבד
-                      <span className="block text-[10px] font-normal opacity-85">טקסט בלבד ללא תאריך</span>
-                    </button>
+                      <button
+                        onClick={() => handleSetTagMode('clean')}
+                        className={`p-2 rounded-xl text-xs font-bold transition-all text-center border ${
+                          tagDisplayMode === 'clean'
+                            ? 'bg-rose-500 text-white border-rose-600 shadow-xs ring-2 ring-rose-200'
+                            : 'bg-white text-slate-700 border-slate-200 hover:bg-rose-50'
+                        }`}
+                      >
+                        ✨ שם + תאריך
+                        <span className="block text-[10px] font-normal opacity-90">נקי ללא קישוטים</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleSetTagMode('name_only')}
+                        className={`p-2 rounded-xl text-xs font-bold transition-all text-center border ${
+                          tagDisplayMode === 'name_only'
+                            ? 'bg-rose-500 text-white border-rose-600 shadow-xs ring-2 ring-rose-200'
+                            : 'bg-white text-slate-700 border-slate-200 hover:bg-rose-50'
+                        }`}
+                      >
+                        🏷️ שם בלבד (למגירות)
+                        <span className="block text-[10px] font-normal opacity-90">מותאם למגירות הילדים</span>
+                      </button>
+                    </div>
+
+                    {tagDisplayMode === 'name_only' && (
+                      <div className="mt-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg text-[11px] text-emerald-800 font-semibold flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>מצב תוויות למגירות פעיל: שם בלבד בגודל מוגדל, ללא תאריך לידה וללא קישוטים היקפיים.</span>
+                      </div>
+                    )}
                   </div>
+
+                  {/* 2. גודל הריבוע: [קטן למגירה] | [בינוני] | [גדול] */}
+                  <div className="pt-2 border-t border-rose-200/60">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-xs font-bold text-slate-800">
+                        2. גודל הריבוע / הכרטיסייה:
+                      </label>
+                      <span className="text-[11px] text-slate-500 font-semibold">
+                        {tagsPerPage} כרטיסיות בדף A4
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        onClick={() => handleSetCardSize('small_drawer')}
+                        className={`p-2 rounded-xl text-xs font-bold transition-all text-center border ${
+                          cardSizePreset === 'small_drawer' || tagsPerPage >= 15
+                            ? 'bg-rose-500 text-white border-rose-600 shadow-xs ring-2 ring-rose-200'
+                            : 'bg-white text-slate-700 border-slate-200 hover:bg-rose-50'
+                        }`}
+                      >
+                        🏷️ קטן למגירה
+                        <span className="block text-[10px] font-normal opacity-90">~6x4 ס"מ (18 בדף)</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleSetCardSize('medium_shelf')}
+                        className={`p-2 rounded-xl text-xs font-bold transition-all text-center border ${
+                          (cardSizePreset === 'medium_shelf' || tagsPerPage === 10 || tagsPerPage === 12) && tagsPerPage < 15 && tagsPerPage > 8
+                            ? 'bg-rose-500 text-white border-rose-600 shadow-xs ring-2 ring-rose-200'
+                            : 'bg-white text-slate-700 border-slate-200 hover:bg-rose-50'
+                        }`}
+                      >
+                        🪑 בינוני
+                        <span className="block text-[10px] font-normal opacity-90">מדף / כיסא (~9x5)</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleSetCardSize('large_door')}
+                        className={`p-2 rounded-xl text-xs font-bold transition-all text-center border ${
+                          (cardSizePreset === 'large_door' || tagsPerPage <= 8)
+                            ? 'bg-rose-500 text-white border-rose-600 shadow-xs ring-2 ring-rose-200'
+                            : 'bg-white text-slate-700 border-slate-200 hover:bg-rose-50'
+                        }`}
+                      >
+                        🚪 גדול
+                        <span className="block text-[10px] font-normal opacity-90">יום הולדת / דלת (~9x6.5)</span>
+                      </button>
+                    </div>
+
+                    {/* Fine-grain tags count selector / סרגל גזירה */}
+                    <div className="mt-2.5 flex items-center justify-between text-[11px] text-slate-600">
+                      <span className="font-medium">סרגל גזירה (כמות בדף):</span>
+                      <div className="flex gap-1 flex-wrap">
+                        {[
+                          { count: 6, label: '6' },
+                          { count: 8, label: '8' },
+                          { count: 10, label: '10' },
+                          { count: 12, label: '12' },
+                          { count: 15, label: '15' },
+                          { count: 18, label: '18' },
+                          { count: 20, label: '20' },
+                          { count: 24, label: '24' }
+                        ].map((opt) => (
+                          <button
+                            key={opt.count}
+                            onClick={() => {
+                              trackTagsPerPageChange(opt.count);
+                              setTagsPerPage(opt.count);
+                              if (opt.count >= 15) setCardSizePreset('small_drawer');
+                              else if (opt.count >= 10) setCardSizePreset('medium_shelf');
+                              else setCardSizePreset('large_door');
+                            }}
+                            className={`px-1.5 py-0.5 rounded text-[10px] font-bold border transition-colors ${
+                              tagsPerPage === opt.count
+                                ? 'bg-rose-600 text-white border-rose-600 shadow-2xs'
+                                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
+                            }`}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3. גודל הכתב: [רגיל] | [גדול] | [מוגדל למקסימום] */}
+                  <div className="pt-2 border-t border-rose-200/60">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-xs font-bold text-slate-800">
+                        3. גודל הכתב של השם:
+                      </label>
+                      <span className="text-[11px] text-rose-700 font-bold">
+                        {customFontScale}%
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        onClick={() => handleSetFontSize('regular')}
+                        className={`p-2 rounded-xl text-xs font-bold transition-all text-center border ${
+                          fontSizePreset === 'regular' && customFontScale <= 110
+                            ? 'bg-rose-500 text-white border-rose-600 shadow-xs ring-2 ring-rose-200'
+                            : 'bg-white text-slate-700 border-slate-200 hover:bg-rose-50'
+                        }`}
+                      >
+                        🔤 רגיל
+                        <span className="block text-[10px] font-normal opacity-90">100% סטנדרטי</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleSetFontSize('large')}
+                        className={`p-2 rounded-xl text-xs font-bold transition-all text-center border ${
+                          fontSizePreset === 'large' && customFontScale > 110 && customFontScale < 160
+                            ? 'bg-rose-500 text-white border-rose-600 shadow-xs ring-2 ring-rose-200'
+                            : 'bg-white text-slate-700 border-slate-200 hover:bg-rose-50'
+                        }`}
+                      >
+                        🔠 גדול
+                        <span className="block text-[10px] font-normal opacity-90">135% מוגדל</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleSetFontSize('max_fill')}
+                        className={`p-2 rounded-xl text-xs font-bold transition-all text-center border ${
+                          fontSizePreset === 'max_fill' || customFontScale >= 160
+                            ? 'bg-rose-500 text-white border-rose-600 shadow-xs ring-2 ring-rose-200'
+                            : 'bg-white text-slate-700 border-slate-200 hover:bg-rose-50'
+                        }`}
+                      >
+                        ⚡ מוגדל למקסימום
+                        <span className="block text-[10px] font-normal opacity-90">ממלא את הריבוע</span>
+                      </button>
+                    </div>
+
+                    {/* Smooth Font Scale Slider */}
+                    <div className="mt-2.5 flex items-center gap-2">
+                      <span className="text-[10px] text-slate-500 font-bold">A</span>
+                      <input
+                        type="range"
+                        min="80"
+                        max="220"
+                        step="5"
+                        value={customFontScale}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          setCustomFontScale(val);
+                          if (val >= 160) setFontSizePreset('max_fill');
+                          else if (val >= 115) setFontSizePreset('large');
+                          else setFontSizePreset('regular');
+                        }}
+                        className="flex-1 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-rose-500"
+                      />
+                      <span className="text-xs text-slate-800 font-black">A</span>
+                    </div>
+                  </div>
+
                 </div>
 
                 {/* Date Position and Size Controls (User's direct request) */}
@@ -1317,16 +1590,23 @@ export default function App() {
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     {[
-                      { count: 10, label: '10 תגים בדף (2x5)', desc: 'גודל תקני מומלץ ~9x5 ס"מ' },
-                      { count: 8, label: '8 תגים בדף (2x4)', desc: 'תגים גדולים ~9x6.5 ס"מ' },
-                      { count: 12, label: '12 תגים בדף (3x4)', desc: 'תגים מרובעים ~6x6.5 ס"מ' },
-                      { count: 15, label: '15 תגים בדף (3x5)', desc: 'תגים קומפקטיים ~6x5 ס"מ' }
+                      { count: 18, label: '18 תגים (3x6) - תווית מגירה', desc: 'כ-6x4.2 ס"מ • מומלץ למגירות' },
+                      { count: 10, label: '10 תגים (2x5) - מדף / כיסא', desc: 'כ-9x5 ס"מ • גודל תקני סטנדרטי' },
+                      { count: 8, label: '8 תגים (2x4) - דלת / יום הולדת', desc: 'כ-9x6.5 ס"מ • גודל מוגדל' },
+                      { count: 12, label: '12 תגים (3x4) - ריבועי', desc: 'כ-6x6.5 ס"מ • פרופורציה מרובעת' },
+                      { count: 20, label: '20 תגים (4x5) - מגירה מרובעת', desc: 'כ-4.8x5 ס"מ • ריבוע קומפקטי' },
+                      { count: 15, label: '15 תגים (3x5) - קומפקטי', desc: 'כ-6x5 ס"מ • בינוני-קטן' },
+                      { count: 6, label: '6 תגים (2x3) - ענק', desc: 'כ-9x8.5 ס"מ • כרטיס גדול ובולט' },
+                      { count: 24, label: '24 תגים (4x6) - מיני מגירות', desc: 'כ-4.8x4.2 ס"מ • חיסכון בדפים' }
                     ].map((opt) => (
                       <button
                         key={opt.count}
                         onClick={() => {
                           trackTagsPerPageChange(opt.count);
                           setTagsPerPage(opt.count);
+                          if (opt.count >= 15) setCardSizePreset('small_drawer');
+                          else if (opt.count >= 10) setCardSizePreset('medium_shelf');
+                          else setCardSizePreset('large_door');
                         }}
                         className={`p-2.5 rounded-xl border text-right transition-all ${
                           tagsPerPage === opt.count
@@ -1427,6 +1707,13 @@ export default function App() {
                   <button
                     onClick={() => {
                       trackPrintTags(tags.length, totalPages);
+                      let printStyle = document.getElementById('table-dynamic-print-style') as HTMLStyleElement;
+                      if (!printStyle) {
+                        printStyle = document.createElement('style');
+                        printStyle.id = 'table-dynamic-print-style';
+                        document.head.appendChild(printStyle);
+                      }
+                      printStyle.textContent = `@media print { @page { size: A4 portrait; margin: 0; } }`;
                       window.print();
                     }}
                     className="w-full py-2.5 px-4 font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm"
@@ -1559,8 +1846,8 @@ export default function App() {
                               </div>
                             )}
 
-                            {/* Top Banner Row: Greeting & Decorative Icon (if showGreeting or showDecorations) */}
-                            {(showGreeting || showDecorations) && (
+                            {/* Top Banner Row: Greeting & Decorative Icon (Hidden in drawer name_only mode) */}
+                            {tagDisplayMode !== 'name_only' && (showGreeting || showDecorations) && (
                               <div className="relative z-10 flex items-center justify-between border-b border-slate-200/50 pb-1.5 min-h-[30px]">
                                 {showGreeting ? (
                                   <span
@@ -1581,20 +1868,19 @@ export default function App() {
                             )}
 
                             {/* Middle Center: Child Name AND Birth Date Directly Underneath */}
-                            <div className="relative z-10 my-auto flex-1 flex flex-col items-center justify-center text-center py-1">
-                              {/* Child Name with dynamic scaling for longer double names */}
+                            <div className="relative z-10 my-auto flex-1 flex flex-col items-center justify-center text-center py-1 w-full overflow-hidden">
+                              {/* Child Name with dynamic responsive font size */}
                               <h2
-                                className={`${
-                                  tag.name.length > 7
-                                    ? 'text-xl sm:text-2xl'
-                                    : 'text-2xl sm:text-3xl'
-                                } font-black tracking-tight leading-none drop-shadow-xs truncate max-w-full px-1`}
+                                className="font-black tracking-tight leading-tight drop-shadow-xs text-center w-full px-1 break-words select-none"
+                                style={{
+                                  fontSize: calculateNameFontSize(tag.name)
+                                }}
                               >
                                 {tag.name}
                               </h2>
 
-                              {/* Birth Date Directly Under Name (Theme-aware colors for light & dark themes) */}
-                              {showDate && datePlacement === 'under_name' && (
+                              {/* Birth Date Directly Under Name (Hidden in drawer name_only mode) */}
+                              {tagDisplayMode !== 'name_only' && showDate && datePlacement === 'under_name' && (
                                 <div
                                   className={`mt-1 font-black tracking-tight flex items-center justify-center gap-1.5 transition-all ${
                                     selectedTheme.textColor
@@ -1622,8 +1908,8 @@ export default function App() {
                               )}
                             </div>
 
-                            {/* Bottom Row: Footer Decoration or Legacy Bottom Date (Hidden in text-only clean mode) */}
-                            {(showDecorations || (showDate && datePlacement === 'bottom')) && (
+                            {/* Bottom Row: Footer Decoration or Legacy Bottom Date (Hidden in drawer name_only mode) */}
+                            {tagDisplayMode !== 'name_only' && (showDecorations || (showDate && datePlacement === 'bottom')) && (
                               <div className="relative z-10 flex items-center justify-between pt-1 border-t border-slate-200/50 min-h-[28px]">
                                 {showDecorations ? (
                                   <div className="flex items-center gap-1 text-xs opacity-75 font-medium shrink-0">
