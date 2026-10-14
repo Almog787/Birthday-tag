@@ -550,28 +550,28 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col font-['Assistant',sans-serif] text-slate-800" dir="rtl">
+    <div className="min-h-screen bg-surface-canvas flex flex-col font-['Rubik',sans-serif] text-text-primary antialiased" dir="rtl">
       
       {/* Top Header Navigation */}
-      <header className="no-print bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
+      <header className="no-print bg-white/95 backdrop-blur-sm border-b border-border-subtle sticky top-0 z-40 shadow-xs">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 md:py-0 md:h-16 flex flex-wrap md:flex-nowrap items-center justify-between gap-2.5">
           
           {/* Logo & Title */}
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-400 flex items-center justify-center text-white shadow-md font-extrabold text-lg sm:text-xl shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-primary to-accent-gold flex items-center justify-center text-white shadow-md font-extrabold text-lg sm:text-xl shrink-0">
               {mainView === 'tags' ? '🎈' : mainView === 'tables' ? '📋' : '🐾'}
             </div>
             <div>
-              <h1 className="text-sm sm:text-base md:text-lg font-black text-slate-900 leading-tight">
+              <h1 className="text-sm sm:text-base md:text-lg font-black text-text-primary leading-tight">
                 {mainView === 'tags'
                   ? 'מעצב תגי יום הולדת לילדים'
                   : mainView === 'tables'
                   ? 'טבלאות ומעקב מעוצבות לגן'
-                  : 'דף פעילות ומיון חיות להדפסה'}
+                  : 'ערכת מיון חיות ללוח מגנטי'}
               </h1>
-              <p className="text-[11px] text-slate-500 hidden sm:block">
+              <p className="text-[11px] text-text-muted hidden sm:block">
                 {mainView === 'tags'
-                  ? `עיצוב תגים, תאריכים מוגדלים והורדת PDF (${tags.length} ילדים)`
+                  ? `עיצוב תגים ותוויות מגירה, תאריכים מוגדלים וייצוא PDF (${tags.length} ילדים)`
                   : mainView === 'tables'
                   ? `מעקב ציוד, מגבונים ותורנויות שבת להדפסה ול-PDF`
                   : `מיון 2 רגליים מול 4 רגליים • גזירה, הדבקה ומתיחת קו A4`}
@@ -580,20 +580,20 @@ export default function App() {
           </div>
 
           {/* Module Switcher Tabs in Center */}
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 order-last md:order-none w-full md:w-auto justify-center overflow-x-auto">
+          <div className="flex items-center gap-1 bg-surface-subtle p-1 rounded-xl border border-border-subtle order-last md:order-none w-full md:w-auto justify-center overflow-x-auto">
             <button
               onClick={() => {
                 trackMainTabSwitch('tags');
                 setMainView('tags');
               }}
-              className={`flex-1 md:flex-none px-3 py-1 text-xs sm:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 shrink-0 ${
+              className={`flex-1 md:flex-none px-3 py-1.5 text-xs sm:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 shrink-0 ${
                 mainView === 'tags'
-                  ? 'bg-white text-rose-600 shadow-xs'
+                  ? 'bg-white text-primary shadow-xs ring-1 ring-border-subtle'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <span>🎈</span>
-              <span>תגי יום הולדת</span>
+              <span>תגי יום הולדת ותוויות</span>
             </button>
 
             <button
@@ -601,13 +601,13 @@ export default function App() {
                 trackMainTabSwitch('tables');
                 setMainView('tables');
               }}
-              className={`flex-1 md:flex-none px-3 py-1 text-xs sm:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 shrink-0 ${
+              className={`flex-1 md:flex-none px-3 py-1.5 text-xs sm:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 shrink-0 ${
                 mainView === 'tables'
-                  ? 'bg-white text-rose-600 shadow-xs'
+                  ? 'bg-white text-primary shadow-xs ring-1 ring-border-subtle'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <FileSpreadsheet className="w-3.5 h-3.5 text-rose-500" />
+              <FileSpreadsheet className="w-3.5 h-3.5 text-primary" />
               <span>טבלאות מעקב לגן</span>
             </button>
 
@@ -616,15 +616,15 @@ export default function App() {
                 trackMainTabSwitch('animal_sorting');
                 setMainView('animal_sorting');
               }}
-              className={`flex-1 md:flex-none px-3 py-1 text-xs sm:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 shrink-0 ${
+              className={`flex-1 md:flex-none px-3 py-1.5 text-xs sm:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 shrink-0 ${
                 mainView === 'animal_sorting'
-                  ? 'bg-white text-rose-600 shadow-xs'
+                  ? 'bg-white text-primary shadow-xs ring-1 ring-border-subtle'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <span>🧲</span>
-              <span>ערכת מיון חיות ללוח מגנטי</span>
-              <span className="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded-full font-black">
+              <span>ערכת מיון חיות</span>
+              <span className="text-[10px] bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded-full font-black">
                 חדש
               </span>
             </button>
@@ -637,7 +637,7 @@ export default function App() {
                 trackBulkImportOpen();
                 setIsBulkModalOpen(true);
               }}
-              className="px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-1.5"
+              className="px-3 py-1.5 text-xs font-bold text-slate-700 bg-surface-subtle hover:bg-slate-200 border border-border-subtle rounded-xl transition-colors flex items-center gap-1.5"
               title="הדבקה מהירה של רשימת ילדים מוואטסאפ או אקסל"
             >
               <Upload className="w-3.5 h-3.5 text-slate-600" />
@@ -658,7 +658,7 @@ export default function App() {
                     printStyle.textContent = `@media print { @page { size: A4 portrait; margin: 0; } }`;
                     window.print();
                   }}
-                  className="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-1.5"
+                  className="px-3 py-1.5 text-xs sm:text-sm font-bold text-slate-700 bg-surface-subtle hover:bg-slate-200 border border-border-subtle rounded-xl transition-colors flex items-center gap-1.5"
                   title="הדפסה ישירה במדפסת"
                 >
                   <Printer className="w-4 h-4 text-slate-600" />
@@ -668,7 +668,7 @@ export default function App() {
                 <button
                   onClick={handleDownloadPDF}
                   disabled={isExporting}
-                  className="px-3 sm:px-3.5 py-1.5 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 rounded-lg shadow-xs hover:shadow transition-all flex items-center gap-1.5 disabled:opacity-50"
+                  className="px-3.5 sm:px-4 py-1.5 text-xs sm:text-sm font-black text-white bg-primary hover:bg-primary-container rounded-xl shadow-xs hover:shadow transition-all flex items-center gap-1.5 disabled:opacity-50"
                 >
                   {isExporting ? (
                     <>
@@ -745,16 +745,16 @@ export default function App() {
           <aside className="no-print lg:col-span-5 flex flex-col gap-4">
             
             {/* Main Navigation Tabs */}
-            <div className="bg-white p-1.5 rounded-xl border border-slate-200 shadow-xs flex items-center gap-1">
+            <div className="bg-white p-1.5 rounded-2xl border border-border-subtle shadow-xs flex items-center gap-1">
               <button
                 onClick={() => {
                   trackTagSubTab('design');
                   setActiveTab('design');
                 }}
-                className={`flex-1 py-2 px-3 text-xs sm:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-2 px-3 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${
                   activeTab === 'design'
-                    ? 'bg-rose-500 text-white shadow-xs'
-                    : 'text-slate-600 hover:bg-slate-100'
+                    ? 'bg-primary text-white shadow-xs'
+                    : 'text-slate-600 hover:bg-surface-subtle'
                 }`}
               >
                 <Palette className="w-4 h-4" />
@@ -766,10 +766,10 @@ export default function App() {
                   trackTagSubTab('names');
                   setActiveTab('names');
                 }}
-                className={`flex-1 py-2 px-3 text-xs sm:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-2 px-3 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${
                   activeTab === 'names'
-                    ? 'bg-rose-500 text-white shadow-xs'
-                    : 'text-slate-600 hover:bg-slate-100'
+                    ? 'bg-primary text-white shadow-xs'
+                    : 'text-slate-600 hover:bg-surface-subtle'
                 }`}
               >
                 <FileText className="w-4 h-4" />
@@ -781,10 +781,10 @@ export default function App() {
                   trackTagSubTab('print');
                   setActiveTab('print');
                 }}
-                className={`flex-1 py-2 px-3 text-xs sm:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-2 px-3 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${
                   activeTab === 'print'
-                    ? 'bg-rose-500 text-white shadow-xs'
-                    : 'text-slate-600 hover:bg-slate-100'
+                    ? 'bg-primary text-white shadow-xs'
+                    : 'text-slate-600 hover:bg-surface-subtle'
                 }`}
               >
                 <Scissors className="w-4 h-4" />
